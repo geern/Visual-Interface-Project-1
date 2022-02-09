@@ -1,0 +1,80 @@
+.legend {
+	margin:  20px 0;
+	list-style:  none;
+	padding: 0;
+}
+.legend-btn {
+	display: inline-block;
+	margin: 0 20px 0 0;
+}
+.legend-symbol {
+	width:  12px;
+	height:  12px;
+	margin-right: 3px;
+	display:  inline-block;
+}
+.legend-btn[category="Median AQI"] .legend-symbol{
+	background: #e15759;
+}
+.legend-btn[category="90th Percentile AQI"] .legend-symbol{
+	background: #f28e2c;
+}
+.legend-btn[category="Max AQI"] .legend-symbol{
+	background: #4e79a7;
+}
+.legend-btn[category="CO"] .legend-symbol{
+	background: #76b7b2;
+}
+.legend-btn[category="NO2"] .legend-symbol{
+	background: #59a14f;
+}
+.legend-btn[category="Ozone"] .legend-symbol{
+	background: #edc949;
+}
+.legend-btn[category="SO2"] .legend-symbol{
+	background: #af7aa1;
+}
+.legend-btn[category="PM 2.5"] .legend-symbol{
+	background: #ff9da7;
+}
+.legend-btn[category="PM 10"] .legend-symbol{
+	background: #9c755f;
+}
+
+.navbar {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+.navbar-content {
+  float: left;
+}
+
+.navbar-element {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+  background-color: #111;
+}
+
+h1{
+	text-align: center;
+}
+
+.source {
+  margin-top: 20px;
+  font-size: 10px;
+  color: #888;
+}
+.source a {
+  color: #888;
+}

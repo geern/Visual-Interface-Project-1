@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project 1</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <ul class="navbar">
+      <li class="navbar-content"><a class="navbar-element">C</a></li>
+      <li class="navbar-content"><a class="navbar-element">B</a></li>
+      <li class="navbar-content"><a class="navbar-element">A</a></li>
+    </ul> 
+
+    <h1>Project 1: Bad Air</h1>
+    <h2>Raymond Gee</h2>
+    <div class="source">
+        Source: Data from <a href="https://www.epa.gov/outdoor-air-quality-data/">US Environmental Protection Agency. Air Quality System Data Mart available via https://www.epa.gov/outdoor-air-quality-data. Accessed Month 02, 2022</a>
+    </div>  
+
+    <ul style="margin-left: 50px;"class="legend">
+        <li class="legend-btn" category="Median AQI"><span class="legend-symbol"></span>Median AQI</li>
+        <li class="legend-btn" category="90th Percentile AQI"><span class="legend-symbol"></span>90th Percentile AQI</li>
+        <li class="legend-btn" category="Max AQI"><span class="legend-symbol"></span>Max AQI</li>
+    </ul>
+    <svg id="LineChart"></svg>
+
+    <ul style="margin-left: 50px;"class="legend">
+        <li class="legend-btn" category="CO"><span class="legend-symbol"></span>CO</li>
+        <li class="legend-btn" category="NO2"><span class="legend-symbol"></span>NO2</li>
+        <li class="legend-btn" category="Ozone"><span class="legend-symbol"></span>Ozone</li>
+        <li class="legend-btn" category="SO2"><span class="legend-symbol"></span>SO2</li>
+        <li class="legend-btn" category="PM 2.5"><span class="legend-symbol"></span>PM 2.5</li>
+        <li class="legend-btn" category="PM 10"><span class="legend-symbol"></span>PM 10</li>
+    </ul>
+    <svg id="LineChart2"></svg>
+
+    <svg id="LineChart3"></svg>
+    
+    <!-- Load external JS files -->
+    <script src="d3.v6.min.js"></script>
+
+    <!-- This is where you will do most of the 'work' for your applications -->
+    <script src="js/main.js"></script>
+    <script src="js/lineChart.js"></script>
+    <!-- <script src="js/stackedAreaChart.js"></script> -->
+</body>
+</html>
