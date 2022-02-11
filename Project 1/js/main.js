@@ -1,5 +1,10 @@
 console.log("We Runnin...");
-
+document.getElementById("Hamilton").onclick = function () {
+	document.getElementById("viewHamilton").style.display = "block"
+}
+document.getElementById("12County").onclick = function () {
+	document.getElementById("viewHamilton").style.display = "none"
+}
 Promise.all([
 	d3.csv('data/AQIData.csv'),
 	d3.csv('data/DaysinYear.csv'),
