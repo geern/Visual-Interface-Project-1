@@ -19,31 +19,56 @@
         Source: Data from <a href="https://www.epa.gov/outdoor-air-quality-data/">US Environmental Protection Agency. Air Quality System Data Mart available via https://www.epa.gov/outdoor-air-quality-data. Accessed Month 02, 2022</a>
     </div>  
 
-    <ul style="margin-left: 50px;"class="legend">
-        <li class="legend-btn" category="Median AQI"><span class="legend-symbol"></span>Median AQI</li>
-        <li class="legend-btn" category="90th Percentile AQI"><span class="legend-symbol"></span>90th Percentile AQI</li>
-        <li class="legend-btn" category="Max AQI"><span class="legend-symbol"></span>Max AQI</li>
-    </ul>
-    <svg id="LineChart"></svg>
+    <div id="viewContent1" style="height: 100vh; width: 100%">
+        <div style="float: left;width: 50%; height: 50%">
+            <ul class="legend">
+                <li class="legend-btn" category="Median AQI"><span class="legend-symbol"></span>Median AQI</li>
+                <li class="legend-btn" category="90th Percentile AQI"><span class="legend-symbol"></span>90th Percentile AQI</li>
+                <li class="legend-btn" category="Max AQI"><span class="legend-symbol"></span>Max AQI</li>
+            </ul>
+            <svg id="LineChart1"></svg>
+        </div>
+        <div style="float: left;width: 50%; height: 50%">
+            <ul class="legend">
+                <li class="legend-btn" category="CO"><span class="legend-symbol"></span>CO</li>
+                <li class="legend-btn" category="NO2"><span class="legend-symbol"></span>NO2</li>
+                <li class="legend-btn" category="Ozone"><span class="legend-symbol"></span>Ozone</li>
+                <li class="legend-btn" category="SO2"><span class="legend-symbol"></span>SO2</li>
+                <li class="legend-btn" category="PM 2.5"><span class="legend-symbol"></span>PM 2.5</li>
+                <li class="legend-btn" category="PM 10"><span class="legend-symbol"></span>PM 10</li>
+            </ul>
+        <svg id="LineChart2"></svg>
+        </div>
+        <div style="float: left;width: 35%; height: 50%">
+            <svg id="LineChart3"></svg>
+        </div>
+        <div style="float: left;width: 65%; height: 50%">
+            <div style="float: left;width: 50%; height: 100%">
+                <svg id="PieChart1"></svg>
+            </div>
+            <div style="float: left;width: 50%; height: 100%">
+                <svg id="PieChart2"></svg>
+            </div>
+        </div>
+        
+        
+        
 
-    <ul style="margin-left: 50px;"class="legend">
-        <li class="legend-btn" category="CO"><span class="legend-symbol"></span>CO</li>
-        <li class="legend-btn" category="NO2"><span class="legend-symbol"></span>NO2</li>
-        <li class="legend-btn" category="Ozone"><span class="legend-symbol"></span>Ozone</li>
-        <li class="legend-btn" category="SO2"><span class="legend-symbol"></span>SO2</li>
-        <li class="legend-btn" category="PM 2.5"><span class="legend-symbol"></span>PM 2.5</li>
-        <li class="legend-btn" category="PM 10"><span class="legend-symbol"></span>PM 10</li>
-    </ul>
-    <svg id="LineChart2"></svg>
+        
+        
 
-    <svg id="LineChart3"></svg>
-    
+        
+
+        
+    </div>
+
     <!-- Load external JS files -->
     <script src="d3.v6.min.js"></script>
 
     <!-- This is where you will do most of the 'work' for your applications -->
     <script src="js/main.js"></script>
     <script src="js/lineChart.js"></script>
+    <script src="js/pieChart.js"></script>
     <!-- <script src="js/stackedAreaChart.js"></script> -->
 </body>
 </html>
