@@ -19,7 +19,7 @@
         Source: Data from <a href="https://www.epa.gov/outdoor-air-quality-data/">US Environmental Protection Agency. Air Quality System Data Mart available via https://www.epa.gov/outdoor-air-quality-data. Accessed Month 02, 2022</a>
     </div>  
 
-    <div id="viewContent1" style="height: 100vh; width: 100%">
+    <div id="viewHamilton" style="height: 100vh; width: 100%">
         <div style="float: left;width: 50%; height: 50%">
             <ul class="legend">
                 <li class="legend-btn" category="Median AQI"><span class="legend-symbol"></span>Median AQI</li>
@@ -51,10 +51,90 @@
             </div>
         </div>
     </div>
-    <div id="viewCounties">
+    <div id="viewCounties" style="height: 100vh; width: 100%; display: none;">
+        <div style="padding-top: 1%;height: 4%;width: 100%">
+            <div style="float: left;width:40%;height:100%;">
+                <select id="LeftSelectCounty" style="display: block;margin: auto;">
+                    <option value="" disabled selected>Select A County</option>
+                </select>
+            </div>
+            <div style="float:left; width: 10%; height: 100%">
+                <label style="text-align: center;display: block;margin: auto;" id="SliderLabel">Current Selected Year: 2021</label>
+                <input style="display: block;margin: auto;" type="range" min="1980" max="2021" value="2021" class="slider" id="YearSlider">
+            </div>
+            <div style="margin: auto;float: left;width:50%;height:100%;">
+                <select id="RightSelectCounty" style="display: block;margin: auto;">
+                    <option value="" disabled selected>Select A County</option>
+                </select>
+            </div>
+        </div>
+        <div style="float: left;width: 50%; height:100%;">
+            <div style="float: left;width: 50%; height: 50%">
+            <ul class="legend">
+                <li class="legend-btn" category="Median AQI"><span class="legend-symbol"></span>Median AQI</li>
+                <li class="legend-btn" category="90th Percentile AQI"><span class="legend-symbol"></span>90th Percentile AQI</li>
+                <li class="legend-btn" category="Max AQI"><span class="legend-symbol"></span>Max AQI</li>
+            </ul>
+            <svg id="LeftLineChart1"></svg>
+        </div>
+        <div style="float: left;width: 50%; height: 50%">
+            <ul class="legend">
+                <li class="legend-btn" category="CO"><span class="legend-symbol"></span>CO</li>
+                <li class="legend-btn" category="NO2"><span class="legend-symbol"></span>NO2</li>
+                <li class="legend-btn" category="Ozone"><span class="legend-symbol"></span>Ozone</li>
+                <li class="legend-btn" category="SO2"><span class="legend-symbol"></span>SO2</li>
+                <li class="legend-btn" category="PM 2.5"><span class="legend-symbol"></span>PM 2.5</li>
+                <li class="legend-btn" category="PM 10"><span class="legend-symbol"></span>PM 10</li>
+            </ul>
+            <svg id="LeftLineChart2"></svg>
+        </div>
+        <div style="float: left;width: 35%; height: 50%">
+            <svg id="LeftLineChart3"></svg>
+        </div>
+        <div style="float: left;width: 65%; height: 50%">
+            <div style="float: left;width: 50%; height: 100%">
+                <svg id="LeftPieChart1"></svg>
+            </div>
+            <div style="float: left;width: 50%; height: 100%">
+                <svg id="LeftPieChart2"></svg>
+            </div>
+        </div>
+        </div>
+        <div style="float: left;width: 50%; height:100%;">
+            <div style="float: left;width: 50%; height: 50%">
+            <ul class="legend">
+                <li class="legend-btn" category="Median AQI"><span class="legend-symbol"></span>Median AQI</li>
+                <li class="legend-btn" category="90th Percentile AQI"><span class="legend-symbol"></span>90th Percentile AQI</li>
+                <li class="legend-btn" category="Max AQI"><span class="legend-symbol"></span>Max AQI</li>
+            </ul>
+            <svg id="RightLineChart1"></svg>
+        </div>
+        <div style="float: left;width: 50%; height: 50%">
+            <ul class="legend">
+                <li class="legend-btn" category="CO"><span class="legend-symbol"></span>CO</li>
+                <li class="legend-btn" category="NO2"><span class="legend-symbol"></span>NO2</li>
+                <li class="legend-btn" category="Ozone"><span class="legend-symbol"></span>Ozone</li>
+                <li class="legend-btn" category="SO2"><span class="legend-symbol"></span>SO2</li>
+                <li class="legend-btn" category="PM 2.5"><span class="legend-symbol"></span>PM 2.5</li>
+                <li class="legend-btn" category="PM 10"><span class="legend-symbol"></span>PM 10</li>
+            </ul>
+        <svg id="RightLineChart2"></svg>
+        </div>
+        <div style="float: left;width: 35%; height: 50%">
+            <svg id="RightLineChart3"></svg>
+        </div>
+        <div style="float: left;width: 65%; height: 50%">
+            <div style="float: left;width: 50%; height: 100%">
+                <svg id="RightPieChart1"></svg>
+            </div>
+            <div style="float: left;width: 50%; height: 100%">
+                <svg id="RightPieChart2"></svg>
+            </div>
+        </div>
+        </div>
         
     </div>
-
+    <div id="ToolTip" style="background: #808080; border-radius: 10px;"></div>
     <!-- Load external JS files -->
     <script src="d3.v6.min.js"></script>
 
@@ -62,6 +142,7 @@
     <script src="js/main.js"></script>
     <script src="js/lineChart.js"></script>
     <script src="js/pieChart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js"></script>
     <!-- <script src="js/stackedAreaChart.js"></script> -->
 </body>
 </html>
