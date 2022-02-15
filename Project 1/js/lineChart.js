@@ -1,6 +1,6 @@
 class LineChart {
 
-  constructor(_config, _data, _names, _title, _xLabel, _yLabel) {
+  constructor(_config, _data, _names, _title, _xLabel, _yLabel, _side) {
     this.config = {
       parentElement: _config.parentElement,
       containerWidth: _config.containerWidth || 500,
@@ -14,6 +14,7 @@ class LineChart {
     this.title = _title;
     this.xLabel = _xLabel;
     this.yLabel = _yLabel
+    this.side = _side
     // Call a class function
     this.initVis();
   }
@@ -24,7 +25,7 @@ class LineChart {
     let vis = this; //this is a keyword that can go out of scope, especially in callback functions, 
                     //so it is good to create a variable that is a reference to 'this' class instance
     //console.log(Object.keys(vis.data[0]))
-
+    vis.chart = []
     vis.names.forEach(function (item, index){
         //set up the width and height of the area where visualizations will go- factoring in margins               
         vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
@@ -63,9 +64,8 @@ class LineChart {
             .attr('height', vis.config.containerHeight + 100);
 
         // Append group element that will contain our actual chart (see margin convention)
-        vis.chart = vis.svg.append('g')
-            .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
-
+        vis.chart[index] = vis.svg.append('g')
+            .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`)
 
         // Initialize axes
         vis.xAxis = d3.axisBottom(vis.xScale).tickFormat(d3.format("d"));
@@ -75,41 +75,44 @@ class LineChart {
             .x(d => vis.xScale(vis.xValue(d)) + 50)
             .y(d => vis.yScale(vis.yValue(d)) + 50);
 
-        vis.chart.append('path')
+        vis.chart[index].append('path')
             .data([vis.data])
             .attr('stroke', (d) => vis.colorPalette(item))
             .attr('fill', 'none')
             .attr('stroke-width', 2)
-            .attr('d', vis.line);
+            .attr('d', vis.line)
+            .attr('class', vis.side + item.replace(/\s/g, '').replace(/\./g,''))
+
+        vis.bisectDate = d3.bisector(vis.xValue).left;
 
         if(index == 0){
             // Append x-axis group and move it to the bottom of the chart
-            vis.xAxisG = vis.chart.append('g')
+            vis.xAxisG = vis.chart[index].append('g')
                 .attr('class', 'axis x-axis')
                 .attr('transform', `translate(50,${vis.height + 50})`)
                 .call(vis.xAxis);
             
             // Append y-axis group
-            vis.yAxisG = vis.chart.append('g')
+            vis.yAxisG = vis.chart[index].append('g')
                 .attr('class', 'axis y-axis')
                 .attr('transform', `translate(50,50)`)
                 .call(vis.yAxis);
 
-            vis.chart.append("text")
+            vis.chart[index].append("text")
                 .attr("class", "y label")
                 .attr("text-anchor", "end")
                 .attr("x", 0)
                 .attr("y", vis.height/2 + 50)
                 .text(vis.yLabel);
 
-            vis.chart.append("text")
+            vis.chart[index].append("text")
                 .attr("class", "x label")
                 .attr("text-anchor", "end")
                 .attr("x", vis.width/2 + 50)
                 .attr("y", vis.height + 90)
                 .text(vis.xLabel);
 
-            vis.chart.append("text")
+            vis.chart[index].append("text")
                 .attr("class", "title")
                 .attr("text-anchor", "end")
                 .attr("x", vis.width/2 + 100)
@@ -118,91 +121,115 @@ class LineChart {
         }
 
         if(index == vis.names.length-1){
-            vis.trackingArea = vis.chart.append('rect')
-                .attr('width', vis.config.containerWidth - 95)
+            vis.shadowHighlightYear = vis.chart[index].append('rect')
+                .attr('width', 2)
                 .attr('height', vis.config.containerHeight - 40)
-                .attr('fill', 'none')
-                .attr('pointer-events', 'all')
-                .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top + 40})`);
-            vis.shadowHighlight = vis.chart.append('rect')
+                .attr('fill', 'grey')
+                .attr('id', 'ShadowHighlightYear')
+                .attr('display', 'block')
+                .attr('opacity', 0.5)
+
+            vis.shadowHighlight = vis.chart[index].append('rect')
                 .attr('width', 2)
                 .attr('height', vis.config.containerHeight - 40)
                 .attr('fill', 'grey')
                 .attr('id', 'ShadowHighlight')
                 .attr('display', 'none')
                 .attr('opacity', 0.5)
+
+            vis.trackingArea = vis.chart[index].append('rect')
+                .attr('width', vis.config.containerWidth - 95)
+                .attr('height', vis.config.containerHeight - 40)
+                .attr('fill', 'none')
+                .attr('pointer-events', 'all')
+                .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top + 40})`);
+            
+
         }
         
         
     });
+    vis.renderVis()
   }
 
- updateVis() { 
-    let vis = this;
-   vis.names.forEach(function (item, index){
-    if(index == vis.names.length-1){
-    
-    vis.xValue = d => d.Year;
-    vis.yValue = d => parseInt(d[vis.names[0]]);
-
-    vis.line = d3.line()
-        .x(d => vis.xScale(vis.xValue(d)) + 50)
-        .y(d => vis.yScale(vis.yValue(d)) + 50);
-
-    var extents = vis.names.map(function(dimensionName) {
-            return d3.extent(vis.data, function(d) { return parseInt(d[dimensionName]) });
-        });
-
-    var extent = [d3.min(extents, function(d) { return d[0] }),
-                  d3.max(extents, function(d) { return d[1] })];
-
-    vis.bisectDate = d3.bisector(vis.xValue).left;
-
-    vis.renderVis();
-}
-})
- }
-
-
- renderVis() { 
-    let vis = this;
+updateVis(_data, _title, _side) { 
+    let vis = this
     vis.names.forEach(function (item, index){
-    if(index == vis.names.length-1){
-    
-    // Add line path
-    vis.trackingArea
-        .on('mouseenter', () => {
-          d3.select("#ToolTip").style('display', 'block');
-          d3.selectAll('#ShadowHighlight').style('display','block')
-        })
+        if(index == 0) {
+            var extents = vis.names.map(function(dimensionName) {
+                return d3.extent(_data, function(d) { return parseInt(d[dimensionName]) });
+            });
+
+            var extent = [d3.min(extents, function(d) { return d[0] }),
+                d3.max(extents, function(d) { return d[1] })];
+
+            vis.yScale.domain(extent)
+
+            vis.chart[index].select('.y-axis')
+                .transition()
+                .duration(1000)
+                .call(vis.yAxis)
+
+            vis.chart[index].select('.title')
+                .text(_title);
+        }
+
+        vis.yValue = d => parseInt(d[item]);
+        var u = vis.chart[index].select("." + _side + item.replace(/\s/g, '').replace(/\./g,''))
+            .data([_data])
+        
+        u.enter()
+            .append('path')
+            .merge(u)
+            .transition()
+            .duration(1000)
+            .attr('d', vis.line)
+            .attr("stroke", vis.colorPalette(item))
+            .attr("stroke-width", 2)
+            .attr('class', vis.side + item.replace(/\s/g, ''))
+
+        u.exit().remove()
+    })
+
+    vis.data = _data
+}
+
+
+    renderVis() { 
+        let vis = this;
+        vis.trackingArea
+            .on('mouseenter', () => {
+                d3.select("#ToolTip").style('display', 'block');
+                d3.selectAll('#ShadowHighlight').style('display','block')
+            })
         .on('mouseleave', () => {
-          d3.select("#ToolTip").style('display', 'none');
-          d3.selectAll('#ShadowHighlight').style('display','none')
-        })
+                d3.select("#ToolTip").style('display', 'none');
+                d3.selectAll('#ShadowHighlight').style('display','none')
+            })
         .on('mousemove', function(event) {
             console.log("MOVING")
-          // Get date that corresponds to current mouse x-coordinate
-          const xPos = d3.pointer(event, this)[0]; // First array element is x, second is y
-          const date = vis.xScale.invert(xPos);
+            // Get date that corresponds to current mouse x-coordinate
+            const xPos = d3.pointer(event, this)[0]; // First array element is x, second is y
+            const date = vis.xScale.invert(xPos);
 
-          // Find nearest data point
-          const index = vis.bisectDate(vis.data, date, 1);
-          const a = vis.data[index - 1];
-          const b = vis.data[index];
-          const d = b && (date - a.date > b.date - date) ? b : a;
+            // Find nearest data point
+            const index = vis.bisectDate(vis.data, date, 1);
+            const a = vis.data[index - 1];
+            const b = vis.data[index];
+            const d = b && (date - a.date > b.date - date) ? b : a;
 
-          var html = () => {
-            var stringReturn = ``
-            stringReturn += `<div class="tooltip-title" ">${vis.title}</div>`
-            stringReturn += `<ul>`
-            stringReturn += `<li>Year: ${d.Year}</li>`
-            vis.names.forEach(function (item, index){
-                stringReturn += `<li>${item}: ${d[item]}</li>`
-            })
-            stringReturn += `</ul>`
-            return stringReturn
-          }
-          
+            var html = () => {
+                var stringReturn = ``
+                stringReturn += `<div class="tooltip-title" ">${vis.title}</div>`
+                stringReturn += `<ul>`
+                stringReturn += `<li>Year: ${d.Year}</li>`
+                vis.names.forEach(function (item, index){
+                    stringReturn += `<li>${item}: ${d[item]}</li>`
+                })
+                stringReturn += `</ul>`
+                return stringReturn
+            }
+
             d3.select('#ToolTip')
                 .style('display', 'block')
                 .style('position','absolute')
@@ -210,17 +237,16 @@ class LineChart {
                 .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                 .html(html);
             d3.selectAll('#ShadowHighlight')
-                .attr('transform', `translate(${xPos +48},${vis.config.margin.top + 40})`)
-
+                .attr('transform', `translate(${xPos + 50},${vis.config.margin.top + 40})`)
         });
-    
-    // Update the axes
-    vis.xAxisG.call(vis.xAxis);
-    vis.yAxisG.call(vis.yAxis);
+
+        // Update the axes
+        vis.xAxisG.call(vis.xAxis);
+        vis.yAxisG.call(vis.yAxis);
     }
-})
-  
-}
-
-
+    renderYearHighlight(_year){
+        let vis = this
+        vis.svg.select('#ShadowHighlightYear')
+                .attr('transform', `translate(${vis.xScale(_year) + 50},${vis.config.margin.top + 40})`)
+    }
 }

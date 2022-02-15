@@ -37,7 +37,7 @@ class PieChart {
 
       vis.numbers = []
       vis.colors = []
-
+      
       vis.names.forEach(function (item, index){
         for (const [id, value] of Object.entries(vis.data)){
           if (id == item){

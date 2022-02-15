@@ -51,86 +51,103 @@
             </div>
         </div>
     </div>
-    <div id="viewCounties" style="height: 100vh; width: 100%; display: none;">
+    <div id="viewCounties" style="height: 1080px; display: none; position: absolute;width: 1920px;">
         <div style="padding-top: 1%;height: 4%;width: 100%">
-            <div style="float: left;width:40%;height:100%;">
-                <select id="LeftSelectCounty" style="display: block;margin: auto;">
+            <div style="float: left;width:50%;height:100%;">
+                <label>Select State for Filter</label><br/>
+                <select id="LeftSelectFilter" style="display: inline-block;margin: auto;">
+                    <option value="All"selected>All</option>
+                </select>
+                <select id="LeftSelectCounty" style="display: inline-block;margin: auto;">
                     <option value="" disabled selected>Select A County</option>
                 </select>
-            </div>
-            <div style="float:left; width: 10%; height: 100%">
-                <label style="text-align: center;display: block;margin: auto;" id="SliderLabel">Current Selected Year: 2021</label>
-                <input style="display: block;margin: auto;" type="range" min="1980" max="2021" value="2021" class="slider" id="YearSlider">
-            </div>
+            </div> 
+            
             <div style="margin: auto;float: left;width:50%;height:100%;">
-                <select id="RightSelectCounty" style="display: block;margin: auto;">
+                <label>Select State for Filter</label><br/>
+                <select id="RightSelectFilter" style="display: inline-block;margin: auto;">
+                    <option value="All"selected>All</option>
+                </select>
+                <select id="RightSelectCounty" style="display: inline-block;margin: auto;">
                     <option value="" disabled selected>Select A County</option>
                 </select>
             </div>
         </div>
-        <div style="float: left;width: 50%; height:100%;">
-            <div style="float: left;width: 50%; height: 50%">
-            <ul class="legend">
-                <li class="legend-btn" category="Median AQI"><span class="legend-symbol"></span>Median AQI</li>
-                <li class="legend-btn" category="90th Percentile AQI"><span class="legend-symbol"></span>90th Percentile AQI</li>
-                <li class="legend-btn" category="Max AQI"><span class="legend-symbol"></span>Max AQI</li>
-            </ul>
-            <svg id="LeftLineChart1"></svg>
-        </div>
-        <div style="float: left;width: 50%; height: 50%">
-            <ul class="legend">
-                <li class="legend-btn" category="CO"><span class="legend-symbol"></span>CO</li>
-                <li class="legend-btn" category="NO2"><span class="legend-symbol"></span>NO2</li>
-                <li class="legend-btn" category="Ozone"><span class="legend-symbol"></span>Ozone</li>
-                <li class="legend-btn" category="SO2"><span class="legend-symbol"></span>SO2</li>
-                <li class="legend-btn" category="PM 2.5"><span class="legend-symbol"></span>PM 2.5</li>
-                <li class="legend-btn" category="PM 10"><span class="legend-symbol"></span>PM 10</li>
-            </ul>
-            <svg id="LeftLineChart2"></svg>
-        </div>
-        <div style="float: left;width: 35%; height: 50%">
-            <svg id="LeftLineChart3"></svg>
-        </div>
-        <div style="float: left;width: 65%; height: 50%">
-            <div style="float: left;width: 50%; height: 100%">
-                <svg id="LeftPieChart1"></svg>
+        <div style="float: left;width: 50%; height:150%;">
+            <div style="float: left;width: 50%; height: 33%">
+                <ul class="legend">
+                    <li class="legend-btn" category="Median AQI"><span class="legend-symbol"></span>Median AQI</li>
+                    <li class="legend-btn" category="90th Percentile AQI"><span class="legend-symbol"></span>90th Percentile AQI</li>
+                    <li class="legend-btn" category="Max AQI"><span class="legend-symbol"></span>Max AQI</li>
+                </ul>
+                <svg id="LeftLineChart1"></svg>
             </div>
-            <div style="float: left;width: 50%; height: 100%">
-                <svg id="LeftPieChart2"></svg>
+            <div style="float: left;width: 50%; height: 33%">
+                <ul class="legend">
+                    <li class="legend-btn" category="CO"><span class="legend-symbol"></span>CO</li>
+                    <li class="legend-btn" category="NO2"><span class="legend-symbol"></span>NO2</li>
+                    <li class="legend-btn" category="Ozone"><span class="legend-symbol"></span>Ozone</li>
+                    <li class="legend-btn" category="SO2"><span class="legend-symbol"></span>SO2</li>
+                    <li class="legend-btn" category="PM 2.5"><span class="legend-symbol"></span>PM 2.5</li>
+                    <li class="legend-btn" category="PM 10"><span class="legend-symbol"></span>PM 10</li>
+                </ul>
+                <svg id="LeftLineChart2"></svg>
             </div>
-        </div>
-        </div>
-        <div style="float: left;width: 50%; height:100%;">
-            <div style="float: left;width: 50%; height: 50%">
-            <ul class="legend">
-                <li class="legend-btn" category="Median AQI"><span class="legend-symbol"></span>Median AQI</li>
-                <li class="legend-btn" category="90th Percentile AQI"><span class="legend-symbol"></span>90th Percentile AQI</li>
-                <li class="legend-btn" category="Max AQI"><span class="legend-symbol"></span>Max AQI</li>
-            </ul>
-            <svg id="RightLineChart1"></svg>
-        </div>
-        <div style="float: left;width: 50%; height: 50%">
-            <ul class="legend">
-                <li class="legend-btn" category="CO"><span class="legend-symbol"></span>CO</li>
-                <li class="legend-btn" category="NO2"><span class="legend-symbol"></span>NO2</li>
-                <li class="legend-btn" category="Ozone"><span class="legend-symbol"></span>Ozone</li>
-                <li class="legend-btn" category="SO2"><span class="legend-symbol"></span>SO2</li>
-                <li class="legend-btn" category="PM 2.5"><span class="legend-symbol"></span>PM 2.5</li>
-                <li class="legend-btn" category="PM 10"><span class="legend-symbol"></span>PM 10</li>
-            </ul>
-        <svg id="RightLineChart2"></svg>
-        </div>
-        <div style="float: left;width: 35%; height: 50%">
-            <svg id="RightLineChart3"></svg>
-        </div>
-        <div style="float: left;width: 65%; height: 50%">
-            <div style="float: left;width: 50%; height: 100%">
-                <svg id="RightPieChart1"></svg>
+            <div style="float: left; width: 100%; height: 33%">
+                <div style="float: left;width: 25%; height:100%;"></div>
+                <div style="float: left;width: 50%; height: 100%">
+                    <svg id="LeftLineChart3"></svg>
+                </div>
+                <div style="float: left;width: 25%; height:100%;"></div>
             </div>
-            <div style="float: left;width: 50%; height: 100%">
-                <svg id="RightPieChart2"></svg>
+            <div style="float: left;width: 100%; height: 33%">
+                <div style="float: left;width: 50%; height: 100%">
+                    <svg id="LeftPieChart1"></svg>
+                </div>
+                <div style="float: left;width: 50%; height: 100%">
+                    <svg id="LeftPieChart2"></svg>
+                </div>
             </div>
         </div>
+        <div style="float: left;width: 50%; height:150%;">
+            <div style="float: left;width: 50%; height: 33%">
+                <ul class="legend">
+                    <li class="legend-btn" category="Median AQI"><span class="legend-symbol"></span>Median AQI</li>
+                    <li class="legend-btn" category="90th Percentile AQI"><span class="legend-symbol"></span>90th Percentile AQI</li>
+                    <li class="legend-btn" category="Max AQI"><span class="legend-symbol"></span>Max AQI</li>
+                </ul>
+                <svg id="RightLineChart1"></svg>
+            </div>
+            <div style="float: left;width: 50%; height: 33%">
+                <ul class="legend">
+                    <li class="legend-btn" category="CO"><span class="legend-symbol"></span>CO</li>
+                    <li class="legend-btn" category="NO2"><span class="legend-symbol"></span>NO2</li>
+                    <li class="legend-btn" category="Ozone"><span class="legend-symbol"></span>Ozone</li>
+                    <li class="legend-btn" category="SO2"><span class="legend-symbol"></span>SO2</li>
+                    <li class="legend-btn" category="PM 2.5"><span class="legend-symbol"></span>PM 2.5</li>
+                    <li class="legend-btn" category="PM 10"><span class="legend-symbol"></span>PM 10</li>
+                </ul>
+                <svg id="RightLineChart2"></svg>
+            </div>
+            <div style="float: left; width: 100%; height: 33%">
+                <div style="float: left;width: 25%; height:100%;"></div>
+                <div style="float: left;width: 50%; height: 100%">
+                    <svg id="RightLineChart3"></svg>
+                </div>
+                <div style="float: left;width: 25%; height:100%;"></div>
+            </div>
+            <div style="float: left;width: 100%; height: 33%">
+                <div style="float: left;width: 50%; height: 100%">
+                    <svg id="RightPieChart1"></svg>
+                </div>
+                <div style="float: left;width: 50%; height: 100%">
+                    <svg id="RightPieChart2"></svg>
+                </div>
+            </div>
+        </div>
+        <div style="float:left; width: 100%; height: 4%">
+            <label style="text-align: center;display: block;margin: auto;" id="SliderLabel">Current Selected Year: 2021</label>
+            <input style="display: block;margin: auto;" type="range" min="1980" max="2021" value="2021" class="slider" id="YearSlider">
         </div>
         
     </div>
