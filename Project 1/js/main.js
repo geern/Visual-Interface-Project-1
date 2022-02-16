@@ -1,59 +1,95 @@
 console.log("We Runnin...");
 
+//setting global variables
 var data;
+var dataFips;
 var leapYears;
 var lineChart1, lineChart2, lineChart3, pieChart1, pieChart2, 
 	LeftLineChart1, LeftLineChart2, LeftLineChart3, LeftPieChart1, LeftPieChart2,
-	RightLineChart1, RightLineChart2, RightLineChart3, RightPieChart1, RightPieChart2
+	RightLineChart1, RightLineChart2, RightLineChart3, RightPieChart1, RightPieChart2,
+	choroplethMap
 
 var leftBuilt, rightBuilt = false
 var slider = document.getElementById("YearSlider")
 
 var groupedData = []
 var states = []
+var geoData = []
+var fips = []
 
+//fetching data from csv
 Promise.all([
 	d3.csv('data/AQIData.csv'),
 	d3.csv('data/DaysinYear.csv'),
+	d3.json('data/counties-10m.json'),
+	d3.csv('data/fips.csv')
 		]).then(function(files) {
 			data = files[0]
 			leapYears = files[1]
-			loadHamilton();
+			geoData = files[2]
+			fips = files[3]
+			dataFips = appendFips(JSON.parse(JSON.stringify(data)))
+
+			geoData.objects.counties.geometries.forEach(d => {
+				for (let i = 0; i < fips.length; i++) {
+					if (parseInt(d.id) == parseInt(fips[i].cnty_fips)) {
+						d.properties.state = fips[i].state
+						d.properties.county = fips[i].county
+						break;
+					}
+				}
+			});
+			loadCounties();
+			updateMap();
 })
 
-document.getElementById("Hamilton").onclick = function () {
-	document.getElementById("viewHamilton").style.display = "block"
-	document.getElementById("viewCounties").style.display = "none"
+function appendFips(_data){
+	var returnData = []
+	for (const [id, county] of Object.entries(_data)) {
+		for (let i = 0; i < fips.length; i++) {
+			if (county.County == fips[i].county && county.State == fips[i].state) {
+				county.fips = fips[i].cnty_fips
+				returnData.push(county)
+			}
+		}
+	}
+	return returnData;
 }
-document.getElementById("12County").onclick = function () {
-	document.getElementById("viewHamilton").style.display = "none"
-	document.getElementById("viewCounties").style.display = "block"
-	loadCounties();
-}
+
 document.getElementById("LeftSelectFilter").onchange = function(){
 	filter("Left")
 }
 document.getElementById("LeftSelectCounty").onchange = function(){
-	build12Counties("Left", leftBuilt)
+	buildCounties("Left", leftBuilt)
+	updateMap()
 	leftBuilt = true
 }
 document.getElementById("RightSelectFilter").onchange = function(){
 	filter("Right")
 }
 document.getElementById("RightSelectCounty").onchange = function(){
-	build12Counties("Right", rightBuilt)
+	buildCounties("Right", rightBuilt)
+	updateMap()
 	rightBuilt = true
 }
+document.getElementById("MapSelect").onchange = function(){
+	updateMap()
+}
 
+//on slider change, updates all charts
 document.getElementById("YearSlider").oninput = function(){
+	updateMap()
+	//gets year from slider and changes label to match the change
 	var e = document.getElementById("YearSlider")
 	var label = document.getElementById("SliderLabel")
 	label.innerHTML = "Current Selected Year: " + e.value
 
-
+	//grabs the selected county on the left hand side
 	var select = document.getElementById("LeftSelectCounty");
 	var value = select.options[select.selectedIndex].value
 	var arr = value.split(", ")
+
+	//checks if a county is selected
 	if(select.selectedIndex) {
 		LeftLineChart1.renderYearHighlight(e.value)
 		LeftLineChart2.renderYearHighlight(e.value)
@@ -61,9 +97,11 @@ document.getElementById("YearSlider").oninput = function(){
 		updatePies(arr[0], arr[1], e.value, "LeftPieChart1", "LeftPieChart2")
 	}
 
+	//grabs the selected county on the right hand side
 	var select = document.getElementById("RightSelectCounty");
 	var value = select.options[select.selectedIndex].value
 	var arr = value.split(", ")
+
 	if(select.selectedIndex) {
 		RightLineChart1.renderYearHighlight(e.value)
 		RightLineChart2.renderYearHighlight(e.value)
@@ -72,40 +110,52 @@ document.getElementById("YearSlider").oninput = function(){
 	}
 }
 
-
-
+//loads the main div of the counties
 function loadCounties(){
-	groupDataBy(JSON.parse(JSON.stringify(data)), ["State", "County"], "groupedData")
-	groupDataBy(JSON.parse(JSON.stringify(data)), ["State"], "states")
-	console.log(groupedData)
-	console.log(states)
+	groupDataBy(JSON.parse(JSON.stringify(data)), ["State", "County"], "groupedData")	//used to get unique state and county combination
+	groupDataBy(JSON.parse(JSON.stringify(data)), ["State"], "states")					//used to get unique states
 
+	//sorts data alphabetically
 	groupedData.sort((a,b) => (a.State == b.State) ? ((a.County > b.County) ? 1 : ((b.County > a.County) ? -1 : 0)) : ((a.State > b.State) ? 1 : ((b.State > a.State) ? -1 : 0)))
 	states.sort((a,b) => (a.State == b.State) ? ((a.County > b.County) ? 1 : ((b.County > a.County) ? -1 : 0)) : ((a.State > b.State) ? 1 : ((b.State > a.State) ? -1 : 0)))
 
+	//loads the counties into dropdown
 	groupedData.forEach(function (item, index){
 		loadDropDown("LeftSelectCounty", [item.State, item.County])
 		loadDropDown("RightSelectCounty", [item.State, item.County])
 	})
 
+	//loads the states into the filter dropdown
 	states.forEach(function (item, index){
 		loadDropDown("LeftSelectFilter", [item.State])
 		loadDropDown("RightSelectFilter", [item.State])
 	})
 
+	//loads filters for map
+	var mapSelect = ["Median AQI", "90th Percentile AQI", "Days CO", 
+		"Days NO2", 
+		"Days Ozone",
+		"Days SO2",
+		"Days PM2.5",
+		"Days PM10"]
+	mapSelect.forEach(function (item, index){
+		loadDropDown("MapSelect", [item])
+	})
 }
 
+//used to load hamilton county for demo
 function loadHamilton(){
 	createBasicDisplay("Ohio", "Hamilton", "LineChart1", "LineChart2", "LineChart3", "PieChart1", "PieChart2", "2021", "")
 }
 
-function build12Counties(_name, _built){
+//used to decide to build new display or update
+function buildCounties(_name, _built){
+	//calls the appropriate dropdown by using name as a input for left or right
 	var e = document.getElementById(_name + "SelectCounty");
 	var value = e.options[e.selectedIndex].value
 	var arr = value.split(", ")
 
-	
-
+	//checks if the left or right is built to decide whether to create a new display or update display
 	if(!_built){
 		createBasicDisplay(arr[0], arr[1], _name + "LineChart1", _name + "LineChart2", _name + "LineChart3", _name + "PieChart1", _name + "PieChart2", slider.value, _name)
 	} else {
@@ -113,10 +163,13 @@ function build12Counties(_name, _built){
 	}
 }
 
+//used to create the displays
 function createBasicDisplay(_state, _county, _lineChart1, _lineChart2, _lineChart3, _pieChart1, _pieChart2, _year, _side){
-	var newData = JSON.parse(JSON.stringify(getCountyAQI(_state, _county, data)))
-	var index = parseInt(_year) - 1980;
 
+	//gets data based on state and county
+	var newData = JSON.parse(JSON.stringify(getCountyAQI(_state, _county, data, "")))
+
+	//gets data for how healthy the days were
 	var healthData = getPercentage(newData, 
 		["Good Days",
 		"Moderate Days",
@@ -124,11 +177,15 @@ function createBasicDisplay(_state, _county, _lineChart1, _lineChart2, _lineChar
 		"Unhealthy Days",
 		"Very Unhealthy Days",
 		"Hazardous Days"])
+
+	//gets the health of the days according to the current year selected
 	var recentHealthYearData = healthData.filter(obj => {
 		return obj.Year == _year
 	})
 	recentHealthYearData = recentHealthYearData[0]
-	if(typeof recentHealthYearData === "undefined") recentHealthYearData = healthData[healthData.length-1]
+	if(typeof recentHealthYearData === "undefined") recentHealthYearData = healthData[healthData.length-1]				//if selected year health data doesn't exist, it takes the most recent data
+	
+	//gets the pollutant of the current year selected
 	var pollutantData = getPercentage(newData, 
 		["Days CO", 
 		"Days NO2", 
@@ -140,22 +197,22 @@ function createBasicDisplay(_state, _county, _lineChart1, _lineChart2, _lineChar
 		return obj.Year == _year
 	})
 	recentPollutantYearData = recentPollutantYearData[0]
-	if(typeof recentPollutantYearData === "undefined") recentPollutantYearData = pollutantData[pollutantData.length-1]
+	if(typeof recentPollutantYearData === "undefined") recentPollutantYearData = pollutantData[pollutantData.length-1]	//if selected year pollutant data doesn't exist, it takes the most recent data
 	var daysData = getReverseNumberofDays(newData, leapYears)
 
+	//sets the width and height for line chart display
 	var width = document.getElementById(_lineChart1).parentElement.offsetWidth - 50
 	var height = document.getElementById(_lineChart1).parentElement.offsetHeight / 3
 
+	//creates display for line charts
 	this[_lineChart1] = createNewLineChart(height*2, width, '#' + _lineChart1, 
 		newData, ["Median AQI", "90th Percentile AQI", "Max AQI"], 
 		"AQI For " + _county + " County", "Year", "AQI", _side)
-	this[_lineChart1].renderVis()
 	this[_lineChart1].renderYearHighlight(slider.value)
 
 	this[_lineChart2] = createNewLineChart(height*2, width, '#' + _lineChart2, 
 		pollutantData, ["Days CO", "Days NO2", "Days Ozone", "Days SO2", "Days PM2.5", "Days PM10"], 
 		"Percentage of Contributing Pollutant Per Year", "Year", "Percent", _side)
-	this[_lineChart2].renderVis()
 	this[_lineChart2].renderYearHighlight(slider.value)
 
 	width = document.getElementById(_lineChart3).parentElement.offsetWidth - 50
@@ -164,12 +221,13 @@ function createBasicDisplay(_state, _county, _lineChart1, _lineChart2, _lineChar
 	this[_lineChart3] = createNewLineChart(height*2, width, '#' + _lineChart3, 
 		daysData, ["Days without AQI"], 
 		"Days Without AQI", "Year", "Days", _side)
-	this[_lineChart3].renderVis()
 	this[_lineChart3].renderYearHighlight(slider.value)
 
+	//sets the width and height for pie chart display
 	width = document.getElementById(_pieChart1).parentElement.offsetWidth
 	height = document.getElementById(_pieChart1).parentElement.offsetHeight
 
+	//creates display for pie charts
 	this[_pieChart1] = createNewPieChart(height, width, '#' + _pieChart1, 
 		recentHealthYearData, 
 		["Good Days",
@@ -193,9 +251,13 @@ function createBasicDisplay(_state, _county, _lineChart1, _lineChart2, _lineChar
 	this[_pieChart2].updateVis(recentPollutantYearData, "Major Pollutants in " + recentPollutantYearData.Year)
 }
 
+//used to update displays, mainly for county changes
 function updateDisplay (_state, _county, _lineChart1, _lineChart2, _lineChart3, _pieChart1, _pieChart2, _year, _side){
-	var newData = JSON.parse(JSON.stringify(getCountyAQI(_state, _county, data)))
 
+	//gets data based on state and county
+	var newData = JSON.parse(JSON.stringify(getCountyAQI(_state, _county, data, "")))
+
+	//gets data for how healthy the days were
 	var healthData = getPercentage(newData, 
 		["Good Days",
 		"Moderate Days",
@@ -207,6 +269,8 @@ function updateDisplay (_state, _county, _lineChart1, _lineChart2, _lineChart3, 
 		return obj.Year == _year
 	})
 	recentHealthYearData = recentHealthYearData[0]
+
+	//gets the pollutant of the current year selected
 	var pollutantData = getPercentage(newData, 
 		["Days CO", 
 		"Days NO2", 
@@ -220,6 +284,7 @@ function updateDisplay (_state, _county, _lineChart1, _lineChart2, _lineChart3, 
 	recentPollutantYearData = recentPollutantYearData[0]
 	var daysData = getReverseNumberofDays(newData, leapYears)
 
+	//updates charts
 	this[_lineChart1].updateVis(newData, "AQI For " + _county + " County", _side)
 	this[_lineChart2].updateVis(newData, "Percentage of Contributing Pollutant Per Year", _side)
 	this[_lineChart3].updateVis(newData, "Days Without AQI", _side)
@@ -227,9 +292,12 @@ function updateDisplay (_state, _county, _lineChart1, _lineChart2, _lineChart3, 
 	this[_pieChart2].updateVis(recentPollutantYearData, "Major Pollutants in " + _year)
 }
 
+//used to update pie charts, mainly from year slider change
 function updatePies(_state, _county, _year, _pieChart1, _pieChart2){
-	var newData = JSON.parse(JSON.stringify(getCountyAQI(_state, _county, data)))
+	//gets data from state and county
+	var newData = JSON.parse(JSON.stringify(getCountyAQI(_state, _county, data, "")))
 
+		//gets data for how healthy the days were
 		var healthData = getPercentage(newData, 
 			["Good Days",
 			"Moderate Days",
@@ -242,7 +310,7 @@ function updatePies(_state, _county, _year, _pieChart1, _pieChart2){
 		})
 		recentHealthYearData = recentHealthYearData[0]
 		
-
+		//gets the pollutant of the current year selected
 		var pollutantData = getPercentage(newData, 
 			["Days CO", 
 			"Days NO2", 
@@ -255,43 +323,102 @@ function updatePies(_state, _county, _year, _pieChart1, _pieChart2){
 		})
 		recentPollutantYearData = recentPollutantYearData[0]
 
-		
+		//updates pie charts
 		this[_pieChart1].updateVis(recentHealthYearData, "Air Quality of " + _year)
 		this[_pieChart2].updateVis(recentHealthYearData, "Major Pollutants in " + _year)
 }
 
-function update12Counties(_name){
-	var e = document.getElementById(_name + "SelectCounty");
-	var value = e.options[e.selectedIndex].value
-	var arr = value.split(", ")
+function updateMap(){
 
-	var slider = document.getElementById("YearSlider")
+	var leftSelect = document.getElementById("LeftSelectCounty");
+	var value = leftSelect.options[leftSelect.selectedIndex].value
+	var leftArr = value.split(", ")
 
-	updateDisplay(arr[0], arr[1], _name + "LineChart1", _name + "LineChart2", _name + "LineChart3", _name + "PieChart1", _name + "PieChart2", slider.value)
+	var rightSelect = document.getElementById("RightSelectCounty");
+	value = rightSelect.options[rightSelect.selectedIndex].value
+	var rightArr = value.split(", ")
+
+	var e = document.getElementById("YearSlider")
+	var select = document.getElementById("MapSelect")
+	var newData = JSON.parse(JSON.stringify(getCountyAQI(null, null, dataFips, e.value)))
+
+	geoData.objects.counties.geometries.forEach(d => {
+		d.properties.selected = false
+		for (let i = 0; i < newData.length; i++) {
+			if (parseInt(d.id) == parseInt(newData[i].fips)) {
+				d.properties.pop = parseInt(newData[i][select.value]);
+				break;
+			}
+		}
+	});
+
+	if(leftSelect.selectedIndex) {
+		var leftCounty = dataFips.filter(obj => {
+				return obj.State == leftArr[0]
+		}).filter(obj => {
+			return obj.County == leftArr[1]
+		})
+	
+		geoData.objects.counties.geometries.forEach(d => {
+			if (parseInt(d.id) == parseInt(leftCounty[0].fips)) {
+				d.properties.selected = true
+			}
+		});
+	}
+
+	if(rightSelect.selectedIndex) {
+		var rightCounty = dataFips.filter(obj => {
+				return obj.State == rightArr[0]
+		}).filter(obj => {
+			return obj.County == rightArr[1]
+		})
+		geoData.objects.counties.geometries.forEach(d => {
+			if (parseInt(d.id) == parseInt(rightCounty[0].fips)) {
+				d.properties.selected = true
+			}
+		});
+		
+	}
+	if(typeof choroplethMap === "undefined"){
+		choroplethMap = new ChoroplethMap({ 
+			parentElement: '.map',   
+			}, geoData, select.value);
+	} else {
+		choroplethMap.updateVis(geoData, select.value)
+	}
 }
 
-function clearDisplay(_name){
-	_name.forEach(function (item, index){
-		d3.select(item)
-		.selectAll('*').remove()
-	})
-}
-
-function getCountyAQI(defState, defCounty, _data){
+//takes raw data and returns data array based on state and county
+function getCountyAQI(_state, _county, _data, _year){
 	var returnData = []
-	for (const [id, county] of Object.entries(_data)) {
-		if (county.State == defState && county.County == defCounty) {
-			returnData.push(county)
+
+	if(_year == ""){
+	//goes through each data and checks if the row state and county match the input
+		for (const [id, county] of Object.entries(_data)) {
+			if (county.State == _state && county.County == _county) {
+				returnData.push(county)
+			}
+		}
+	} else {
+		for (const [id, county] of Object.entries(_data)) {
+			if (county.Year == _year) {
+				returnData.push(county)
+			}
 		}
 	}
 	return returnData
 }
 
+//loads the dropdown menus
 function loadDropDown(_name, _values){
+
+	//grabs the dropdown
 	var select = document.getElementById(_name);
 	var opt = document.createElement('option')
 	var value = ""
 	var innerHTML = ""
+
+	//goes through each item in _values array to create the name and value of the option
 	_values.forEach(function(item, index){
 		if(index == _values.length-1) {
 			value += item
@@ -303,15 +430,20 @@ function loadDropDown(_name, _values){
 		}
 	})
 	
+	//appends the option to the dropdown
 	opt.value = value
 	opt.innerHTML = innerHTML
 	select.appendChild(opt)
 }
 
+//used for showing counties based on the filtered state
 function filter(_side){
+
+	//gets the filter according the the side it is on
 	var keyWord = document.getElementById(_side + "SelectFilter").value;
 	var select = document.getElementById(_side + "SelectCounty");
 
+	//iterates through each option in the dropdown to determine if it will be displayed
 	for(var i = 0; i < select.length; i++){
 		var txt = select.options[i].text.split(" - ")[0];
 		if(!txt.match(keyWord) && keyWord != "All"){
@@ -324,10 +456,15 @@ function filter(_side){
 	} 
 }
 
+//used for calculating percentage
 function getPercentage(_data, _columns){
 	var returnData = []
+
+	//for loop for each data row 
 	for (const [id, county] of Object.entries(_data)){
 		var totalDays = county["Days with AQI"]
+
+		//for loop to go through the column names defined in _columns and divides it by the "Days with AQI" * 100 to get percentage of days with that pollutant in that year
 		_columns.forEach(function (item, index){
 			county[item] = county[item]/totalDays * 100
 		})
@@ -336,8 +473,11 @@ function getPercentage(_data, _columns){
 	return returnData
 }
 
+//used to calculate the amount of days without AQI
 function getReverseNumberofDays(_data, _years){
 	var returnData = []
+
+	//_years is from a csv containing years and how many days are in it 
 	for(const[id, date] of Object.entries(_years)){
 		for (const [id, county] of Object.entries(_data)) {
 			if (county.Year == date.Year) {
@@ -350,6 +490,7 @@ function getReverseNumberofDays(_data, _years){
 	return returnData
 }
 
+//function used to create new line chart
 function createNewLineChart(_height, _width, _lineChart, _data, _columns, _title, _xAxis, _yAxis, _side){
 	return new LineChart({
   			'parentElement': _lineChart,
@@ -358,6 +499,7 @@ function createNewLineChart(_height, _width, _lineChart, _data, _columns, _title
 	}, _data, _columns, _title, _xAxis, _yAxis, _side)
 }
 
+//function used to create new pie chart
 function createNewPieChart(_height, _width, _pieChart, _data, _columns, _title, _xAxis, _yAxis){
 	return new PieChart({
   			'parentElement': _pieChart,
@@ -366,6 +508,7 @@ function createNewPieChart(_height, _width, _pieChart, _data, _columns, _title, 
 	}, _data, _columns, _title, _xAxis, _yAxis)
 }
 
+//function used to group data, used for finding unique states and counties
 function groupDataBy(_data, _groupBy, _varName){
 	var helper = {};
 	var result = _data.reduce(function(r, o) {
@@ -374,7 +517,6 @@ function groupDataBy(_data, _groupBy, _varName){
 			if(index == _groupBy.length-1) key += o[item]
 			else key += o[item] + '-'
 		})
-		//var key = o.State + '-' + o.County;
 
 		if(!helper[key]) {
 		helper[key] = Object.assign({}, o); // create a copy of o
@@ -384,3 +526,4 @@ function groupDataBy(_data, _groupBy, _varName){
 		return r;
 	}, []);
 }
+

@@ -143,57 +143,53 @@ class LineChart {
                 .attr('fill', 'none')
                 .attr('pointer-events', 'all')
                 .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top + 40})`);
-            
-
         }
-        
         
     });
     vis.renderVis()
   }
 
-updateVis(_data, _title, _side) { 
-    let vis = this
-    vis.names.forEach(function (item, index){
-        if(index == 0) {
-            var extents = vis.names.map(function(dimensionName) {
-                return d3.extent(_data, function(d) { return parseInt(d[dimensionName]) });
-            });
+    updateVis(_data, _title, _side) { 
+        let vis = this
+        vis.names.forEach(function (item, index){
+            if(index == 0) {
+                var extents = vis.names.map(function(dimensionName) {
+                    return d3.extent(_data, function(d) { return parseInt(d[dimensionName]) });
+                });
 
-            var extent = [d3.min(extents, function(d) { return d[0] }),
-                d3.max(extents, function(d) { return d[1] })];
+                var extent = [d3.min(extents, function(d) { return d[0] }),
+                    d3.max(extents, function(d) { return d[1] })];
 
-            vis.yScale.domain(extent)
+                vis.yScale.domain(extent)
 
-            vis.chart[index].select('.y-axis')
+                vis.chart[index].select('.y-axis')
+                    .transition()
+                    .duration(1000)
+                    .call(vis.yAxis)
+
+                vis.chart[index].select('.title')
+                    .text(_title);
+            }
+
+            vis.yValue = d => parseInt(d[item]);
+            var u = vis.chart[index].select("." + _side + item.replace(/\s/g, '').replace(/\./g,''))
+                .data([_data])
+            
+            u.enter()
+                .append('path')
+                .merge(u)
                 .transition()
                 .duration(1000)
-                .call(vis.yAxis)
+                .attr('d', vis.line)
+                .attr("stroke", vis.colorPalette(item))
+                .attr("stroke-width", 2)
+                .attr('class', vis.side + item.replace(/\s/g, ''))
 
-            vis.chart[index].select('.title')
-                .text(_title);
-        }
+            u.exit().remove()
+        })
 
-        vis.yValue = d => parseInt(d[item]);
-        var u = vis.chart[index].select("." + _side + item.replace(/\s/g, '').replace(/\./g,''))
-            .data([_data])
-        
-        u.enter()
-            .append('path')
-            .merge(u)
-            .transition()
-            .duration(1000)
-            .attr('d', vis.line)
-            .attr("stroke", vis.colorPalette(item))
-            .attr("stroke-width", 2)
-            .attr('class', vis.side + item.replace(/\s/g, ''))
-
-        u.exit().remove()
-    })
-
-    vis.data = _data
-}
-
+        vis.data = _data
+    }
 
     renderVis() { 
         let vis = this;
@@ -244,6 +240,7 @@ updateVis(_data, _title, _side) {
         vis.xAxisG.call(vis.xAxis);
         vis.yAxisG.call(vis.yAxis);
     }
+
     renderYearHighlight(_year){
         let vis = this
         vis.svg.select('#ShadowHighlightYear')

@@ -128,7 +128,7 @@ class PieChart {
       vis.svg.select(".title")
         .text(_title)
     } else {
-      vis.svg.select(".error").attr("display", "none")
+      vis.svg.selectAll(".error").attr("display", "none")
       vis.svg.select("g")
         .attr("display", "block")
 
