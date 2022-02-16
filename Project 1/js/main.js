@@ -75,6 +75,17 @@ document.getElementById("RightSelectCounty").onchange = function(){
 document.getElementById("MapSelect").onchange = function(){
 	updateMap()
 }
+document.getElementById("RUNITDOWN").onclick = async function(){
+	await new Promise(r => setTimeout(r, 2000));
+	console.log("RUN")
+	for(var i = 1980; i <= 2021; i++){
+		console.log("WERUNNING")
+		await new Promise(r => setTimeout(r, 2000));
+		var e = document.getElementById("YearSlider")
+		e.value = i;
+		e.oninput();
+	}
+}
 
 //on slider change, updates all charts
 document.getElementById("YearSlider").oninput = function(){
