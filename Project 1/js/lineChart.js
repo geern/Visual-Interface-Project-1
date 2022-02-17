@@ -56,7 +56,6 @@ class LineChart {
         vis.colorPalette = d3.scaleOrdinal()
             .domain(Object.keys(vis.data[0]))
             .range(d3.schemeTableau10);
-        //console.log(item + vis.colorPalette(item))
 
         // Define size of SVG drawing area
         vis.svg = d3.select(vis.config.parentElement)
@@ -75,17 +74,12 @@ class LineChart {
             .x(d => vis.xScale(vis.xValue(d)) + 50)
             .y(d => vis.yScale(vis.yValue(d)) + 50);
 
-        vis.chart[index].append('path')
-            .data([vis.data])
-            .attr('stroke', (d) => vis.colorPalette(item))
-            .attr('fill', 'none')
-            .attr('stroke-width', 2)
-            .attr('d', vis.line)
-            .attr('class', vis.side + item.replace(/\s/g, '').replace(/\./g,''))
-
-        vis.bisectDate = d3.bisector(vis.xValue).left;
-
         if(index == 0){
+            vis.back = vis.chart[index].append('rect')
+                .attr('width', vis.config.containerWidth - 95)
+                .attr('height', vis.config.containerHeight - 40)
+                .attr('fill', 'white')
+                .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top + 40})`);
             // Append x-axis group and move it to the bottom of the chart
             vis.xAxisG = vis.chart[index].append('g')
                 .attr('class', 'axis x-axis')
@@ -120,6 +114,16 @@ class LineChart {
                 .text(vis.title);
         }
 
+        vis.chart[index].append('path')
+            .data([vis.data])
+            .attr('stroke', (d) => vis.colorPalette(item))
+            .attr('fill', 'none')
+            .attr('stroke-width', 4)
+            .attr('d', vis.line)
+            .attr('class', vis.side + item.replace(/\s/g, '').replace(/\./g,''))
+
+        vis.bisectDate = d3.bisector(vis.xValue).left;
+
         if(index == vis.names.length-1){
             vis.shadowHighlightYear = vis.chart[index].append('rect')
                 .attr('width', 2)
@@ -143,8 +147,7 @@ class LineChart {
                 .attr('fill', 'none')
                 .attr('pointer-events', 'all')
                 .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top + 40})`);
-        }
-        
+        }        
     });
     vis.renderVis()
   }
@@ -182,7 +185,7 @@ class LineChart {
                 .duration(1000)
                 .attr('d', vis.line)
                 .attr("stroke", vis.colorPalette(item))
-                .attr("stroke-width", 2)
+                .attr("stroke-width", 4)
                 .attr('class', vis.side + item.replace(/\s/g, ''))
 
             u.exit().remove()
@@ -229,8 +232,15 @@ class LineChart {
             d3.select('#ToolTip')
                 .style('display', 'block')
                 .style('position','absolute')
-                .style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
+                //.style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
                 .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
+                .style('left', ()=>{
+                    if(event.pageX >= 1600){
+                        var width = document.getElementById('ToolTip').offsetWidth
+                        return (event.pageX - vis.config.tooltipPadding - width) + 'px'
+                    }
+                    return (event.pageX + vis.config.tooltipPadding) + 'px'
+                })
                 .html(html);
             d3.selectAll('#ShadowHighlight')
                 .attr('transform', `translate(${xPos + 50},${vis.config.margin.top + 40})`)

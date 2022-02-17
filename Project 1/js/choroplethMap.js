@@ -33,8 +33,8 @@ class ChoroplethMap {
   initVis() {
     let vis = this;
     // Calculate inner chart size. Margin specifies the space around the actual chart.
-    vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
-    vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
+    vis.width = vis.config.containerWidth
+    vis.height = vis.config.containerHeight
 
     // Define size of SVG drawing area
     vis.svg = d3.select(vis.config.parentElement).append('svg')
@@ -44,10 +44,9 @@ class ChoroplethMap {
 
     vis.svg.append('rect')
             .attr('class', 'background center-container')
-            .attr('height', vis.config.containerWidth ) //height + margin.top + margin.bottom)
-            .attr('width', vis.config.containerHeight) //width + margin.left + margin.right)
+            .attr('height', vis.config.containerWidth )
+            .attr('width', vis.config.containerHeight)
             .on('click', vis.clicked);
-
   
     vis.projection = d3.geoAlbersUsa()
             .translate([vis.width /2 , vis.height / 2])
@@ -88,7 +87,10 @@ class ChoroplethMap {
                 .data(topojson.feature(vis.us, vis.us.objects.counties).features)
                 .enter().append("path")
                 .attr("d", vis.path)
-                // .attr("class", "county-boundary")
+                .attr("class", d => {
+                      if(d.properties.selected) return 'county-boundary-selected'
+                      return 'county-boundary'
+                    })
                 .attr('fill', d => {
                       if (d.properties.pop) {
                         return vis.colorScale(d.properties.pop);
@@ -113,6 +115,7 @@ class ChoroplethMap {
                   .on('mouseleave', () => {
                     d3.select('#ToolTip').style('display', 'none');
                   });
+
     vis.counties.on('click', (d, event) => {
       if(!rotate){
         clickFips = event.id
@@ -137,20 +140,64 @@ class ChoroplethMap {
       }
       })
 
-
-
     vis.g.append("path")
                 .datum(topojson.mesh(vis.us, vis.us.objects.states, function(a, b) { return a !== b; }))
                 .attr("id", "state-borders")
                 .attr("d", vis.path);
 
+    vis.linearGradient = vis.svg.append('defs').append('linearGradient')
+        .attr("id", "legend-gradient")
+        /*.attr('x1', '0%')
+        .attr('x2', '0%')
+        .attr('y1', '0%')
+        .attr('y2', '100%')*/
+
+    vis.legend = vis.svg.append('g')
+        .attr('class', 'legend')
+        .attr('transform', `translate(${vis.width/2 - 125},${20})`);
+    
+    vis.legendRect = vis.legend.append('rect')
+        .attr('width', 250)
+        .attr('height', 25);
+
+    vis.legendTitle = vis.legend.append('text')
+        .attr('class', 'legend-title')
+        .attr('dy', '.35em')
+        .attr('y',-10)
+        .text(vis.column)
+
+    vis.legendStops = [
+      { color: vis.color[0], value: d3.extent(vis.data.objects.counties.geometries, d => d.properties.pop)[0], offset: 0},
+      { color: vis.color[1], value: d3.extent(vis.data.objects.counties.geometries, d => d.properties.pop)[1], offset: 100},
+    ];
+
+    vis.legend.selectAll('.legend-label')
+        .data(vis.legendStops)
+      .join('text')
+        .attr('class', 'legend-label')
+        .attr('text-anchor', 'middle')
+        .attr('dy', '.35em')
+        .attr('y', 40)
+        .attr('x', (d,index) => {
+          return index == 0 ? 0 : 250;
+        })
+        .text(d => Math.round(d.value * 10 ) / 10);
+
+    vis.linearGradient.selectAll('stop')
+        .data(vis.legendStops)
+      .join('stop')
+        .attr('offset', d => d.offset)
+        .attr('stop-color', d => d.color);
+
+    vis.legendRect.attr('fill', 'url(#legend-gradient)');
   }
 
   updateVis(_data, _column){
     let vis = this
 
-    vis.svg.select('#counties').remove()
-
+    vis.svg.selectAll('*').remove()
+    //vis.legend.selectAll('*').remove()
+    vis.column = _column
     vis.colorPallete.forEach(d => {
       if(d.type == _column)  vis.color = d.colour
     })
@@ -168,23 +215,24 @@ class ChoroplethMap {
             .attr('width', vis.width + vis.config.margin.left + vis.config.margin.right)
             .attr('height', vis.height + vis.config.margin.top + vis.config.margin.bottom)
 
-
     vis.counties = vis.g.append("g")
                 .attr("id", "counties")
                 .selectAll("path")
                 .data(topojson.feature(vis.us, vis.us.objects.counties).features)
                 .enter().append("path")
                 .attr("d", vis.path)
-                // .attr("class", "county-boundary")
+                .attr("class", d => {
+                      if(d.properties.selected) return 'county-boundary-selected'
+                      return 'county-boundary'
+                    })
                 .attr('fill', d => {
-                      if(d.properties.selected){
-                        return "#AAFF00"
-                      } else if (d.properties.pop) {
+                      if (d.properties.pop) {
                         return vis.colorScale(d.properties.pop);
                       } else {
                         return 'url(#lightstripe)';
                       }
-                    });
+                    })
+                
 
     vis.counties
                 .on('mousemove', (d,event) => {
@@ -202,6 +250,7 @@ class ChoroplethMap {
                   .on('mouseleave', () => {
                     d3.select('#ToolTip').style('display', 'none');
                   });
+
     vis.counties.on('click', (d, event) => {
       if(!rotate){
         clickFips = event.id
@@ -230,6 +279,52 @@ class ChoroplethMap {
                 .datum(topojson.mesh(vis.us, vis.us.objects.states, function(a, b) { return a !== b; }))
                 .attr("id", "state-borders")
                 .attr("d", vis.path);
+
+    vis.linearGradient = vis.svg.append('defs').append('linearGradient')
+        .attr("id", "legend-gradient")
+        /*.attr('x1', '0%')
+        .attr('x2', '0%')
+        .attr('y1', '0%')
+        .attr('y2', '100%')*/
+
+    vis.legend = vis.svg.append('g')
+        .attr('class', 'legend')
+        .attr('transform', `translate(${vis.width/2  - 125},${20})`);
+    
+    vis.legendRect = vis.legend.append('rect')
+        .attr('width', 250)
+        .attr('height', 25);
+
+    vis.legendTitle = vis.legend.append('text')
+        .attr('class', 'legend-title')
+        .attr('dy', '.35em')
+        .attr('y',-10)
+        .text(vis.column)
+
+    vis.legendStops = [
+      { color: vis.color[0], value: d3.extent(vis.data.objects.counties.geometries, d => d.properties.pop)[0], offset: 0},
+      { color: vis.color[1], value: d3.extent(vis.data.objects.counties.geometries, d => d.properties.pop)[1], offset: 100},
+    ];
+
+    vis.legend.selectAll('.legend-label')
+        .data(vis.legendStops)
+      .join('text')
+        .attr('class', 'legend-label')
+        .attr('text-anchor', 'middle')
+        .attr('dy', '.35em')
+        .attr('y', 40)
+        .attr('x', (d,index) => {
+          return index == 0 ? 0 : 250;
+        })
+        .text(d => Math.round(d.value * 10 ) / 10);
+
+    vis.linearGradient.selectAll('stop')
+        .data(vis.legendStops)
+      .join('stop')
+        .attr('offset', d => d.offset)
+        .attr('stop-color', d => d.color);
+
+    vis.legendRect.attr('fill', 'url(#legend-gradient)');
   }
 
   

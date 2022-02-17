@@ -58,7 +58,7 @@ class PieChart {
           .attr('radius', vis.radius);
 
       vis.chart = vis.svg.append('g')
-              .attr('transform', `translate(${vis.width /2+50},${vis.height /2+50})`);
+              .attr('transform', `translate(${vis.width /2+100},${vis.height /2})`);
 
       vis.pie = d3.pie()
 
@@ -78,7 +78,7 @@ class PieChart {
         })
         .attr("d", vis.arc)
 
-      var y = 110
+      var y = 30
       vis.names.forEach(function (item, index){
         vis.svg.append("circle")
           .attr("cx", 10)
@@ -98,7 +98,7 @@ class PieChart {
         .attr("class", "title")
         .attr("text-anchor", "middle")
         .attr("x", vis.width/2)
-        .attr("y", 50)
+        .attr("y", 20)
         .text(vis.title);
 
       vis.trackingArea = vis.chart.append('circle')
@@ -112,19 +112,19 @@ class PieChart {
 
   //leave this empty for now
   updateVis(_data, _title) { 
-    let vis = this
+  let vis = this
     if(typeof _data === "undefined"){
       vis.svg.select("g")
         .attr("display", "none")
       vis.svg = d3.select(vis.config.parentElement)
-          .attr('width', vis.config.containerWidth)
-          .attr('height', vis.config.containerHeight)
-          .attr('radius', vis.radius);
+        .attr('width', vis.config.containerWidth)
+        .attr('height', vis.config.containerHeight)
+        .attr('radius', vis.radius);
       vis.svg.append("text")
-          .text("No Data Exists for this Year")
-          .attr("class", "error")
-          .style("font-size", "15px")
-          .attr('transform', `translate(${vis.config.containerWidth/2 -50},${vis.config.containerHeight/2+60})`)
+        .text("No Data Exists for this Year")
+        .attr("class", "error")
+        .style("font-size", "15px")
+        .attr('transform', `translate(${vis.config.containerWidth/2 -50},${vis.config.containerHeight/2+50})`)
       vis.svg.select(".title")
         .text(_title)
     } else {
@@ -132,43 +132,43 @@ class PieChart {
       vis.svg.select("g")
         .attr("display", "block")
 
-    vis.newNumbers = []
-    vis.names.forEach(function (item, index){
+      vis.newNumbers = []
+      vis.names.forEach(function (item, index){
         for (const [id, value] of Object.entries(_data)){
           if (id == item){
-            vis.newNumbers.push(value)
+          vis.newNumbers.push(value)
           }
         }
       })
 
-    var newData = vis.pie(vis.newNumbers)
+      var newData = vis.pie(vis.newNumbers)
 
-    var u = vis.svg.selectAll("path")
-    .data(newData)
+      var u = vis.svg.selectAll("path")
+      .data(newData)
 
-  u.enter()
-    .append('path')
-    .merge(u)
-    .transition()
-    .duration(1000)
-    .attr('d', d3.arc()
-      .innerRadius(0)
-      .outerRadius(vis.radius)
-    )
-    .attr("fill", function(d, i){
+      u.enter()
+        .append('path')
+        .merge(u)
+        .transition()
+        .duration(1000)
+        .attr('d', d3.arc()
+          .innerRadius(0)
+          .outerRadius(vis.radius)
+        )
+        .attr("fill", function(d, i){
           return vis.colors[i];
         })
-    .attr("stroke", "white")
-    .style("stroke-width", "2px")
-    .style("opacity", 1)
+        .attr("stroke", "white")
+        .style("stroke-width", "2px")
+        .style("opacity", 1)
 
-    vis.svg.select(".title")
-      .text(_title)
-        u.exit()
+      vis.svg.select(".title")
+        .text(_title)
+      u.exit()
         .remove()
-      }
-      vis.numbers = vis.newNumbers
-      vis.renderVis();
+    }
+    vis.numbers = vis.newNumbers
+    vis.renderVis();
  }
 
 
@@ -198,7 +198,13 @@ class PieChart {
             d3.select('#ToolTip')
                 .style('display', 'block')
                 .style('position','absolute')
-                .style('left', (event.pageX + 10) + 'px')   
+                .style('left', ()=>{
+                    if(event.pageX >= 1600){
+                        var width = document.getElementById('ToolTip').offsetWidth
+                        return (event.pageX - 10 - width) + 'px'
+                    }
+                    return (event.pageX + 10) + 'px'
+                })   
                 .style('top', (event.pageY + 10) + 'px')
                 .html(html);
 

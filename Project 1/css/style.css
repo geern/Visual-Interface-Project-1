@@ -41,47 +41,18 @@
 	background: #9c755f;
 }
 
-.navbar {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: #333;
-}
-
-.navbar-content {
-  float: left;
-}
-
-.navbar-element {
-  display: block;
-  color: white;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-}
-
-/* Change the link color to #111 (black) on hover */
-li a:hover {
-  background-color: #111;
-}
-
-h1{
-	text-align: center;
-}
-
 .source {
   margin-top: 20px;
   font-size: 10px;
-  color: #888;
+  color: black;
 }
 .source a {
-  color: #888;
+  color: black;
 }
 
 .background {
-            fill: none;
-            pointer-events: all;
+  fill: none;
+  pointer-events: all;
 }
 
 #states {
@@ -101,14 +72,10 @@ h1{
     pointer-events: none;
 }
 
-.county-boundary {
-    fill: gray;
-    stroke: #fff;
-    stroke-width: .5px;
-}
-
-.county-boundary:hover, .state:hover {
-    fill: orange;
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%
 }
 
 #ToolTip {
@@ -132,4 +99,38 @@ h1{
 
 #counties{
 	cursor: pointer;
+}
+
+.legend-title {
+  font-size: .7rem;
+  font-weight: 600;
+}
+.legend-label {
+  font-size: .7rem;
+}
+
+.county-boundary {
+    stroke: dimgray;
+    stroke-width: .5px;
+}
+
+.county-boundary-selected {
+    stroke: #AAFF00;
+    stroke-width:3px;
+}
+
+.county-boundary:hover, .state:hover {
+    fill: orange;
+}
+
+.left{
+	background: #3FEEE6
+}
+
+.right{
+	background: #55BCC9
+}
+
+.middle{
+	background: #CAFAFE
 }

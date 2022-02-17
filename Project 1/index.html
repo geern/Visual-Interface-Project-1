@@ -5,135 +5,122 @@
     <title>Project 1</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body style="background: #50b8de">
 
-    <ul class="navbar">
-      <li class="navbar-content" id="County"><a class="navbar-element">County Comparison</a></li>
-    </ul> 
-
-    <h1>Project 1: Bad Air</h1>
-    <h2>Raymond Gee</h2>
-    <div class="source">
-        Source: Data from <a href="https://www.epa.gov/outdoor-air-quality-data/">US Environmental Protection Agency. Air Quality System Data Mart available via https://www.epa.gov/outdoor-air-quality-data. Accessed Month 02, 2022</a>
-    </div>  
-
-    <div id="viewCounties" style="height: 1080px; display: block; position: absolute;width: 1920px;">
-        <div style="padding-top: 1%;height: 4%;width: 100%">
-            <div style="float: left;width:50%;height:100%;">
-                <label>Select State for Filter</label><br/>
-                <select id="LeftSelectFilter" style="display: inline-block;margin: auto;">
-                    <option value="All"selected>All</option>
-                </select>
-                <select id="LeftSelectCounty" style="display: inline-block;margin: auto;">
-                    <option value="" disabled selected>Select A County</option>
-                </select>
-            </div> 
-            
-            <div style="margin: auto;float: left;width:50%;height:100%;">
-                <label>Select State for Filter</label><br/>
-                <select id="RightSelectFilter" style="display: inline-block;margin: auto;">
-                    <option value="All"selected>All</option>
-                </select>
-                <select id="RightSelectCounty" style="display: inline-block;margin: auto;">
-                    <option value="" disabled selected>Select A County</option>
-                </select>
-            </div>
+    <div class="" style="width: 1900;height: 60px; position: fixed; top:0; left:0;right:0; background: #50b8de; z-index: 100;">
+        <div style="float: left;width:45%;height:100%;">
+            <label>Select State for Filter</label><br/>
+            <select id="LeftSelectFilter" style="display: inline-block;margin: auto;">
+                <option value="All"selected>All</option>
+            </select>
+            <select id="LeftSelectCounty" style="display: inline-block;margin: auto;">
+                <option value="" disabled selected>Select A County</option>
+            </select>
+        </div> 
+        <div style="float:left; width: 10%; height: 100%">
+            <label style="text-align: center;display: block;margin: auto;" id="SliderLabel">Current Selected Year: 2021</label>
+            <input style="display: block;margin: auto;" type="range" min="1980" max="2021" value="2021" class="slider" id="YearSlider">
+            <button style="display: block;margin: auto;" id="RUNITDOWN">Go Through All Years</button>
+        </div> 
+        <div style="margin: auto;float: left;width:45%;height:100%;">
+            <label style="float:right">Select State for Filter</label><br/>
+            <select id="RightSelectFilter" style="float: right;display: inline-block;margin: auto;">
+                <option value="All"selected>All</option>
+            </select>
+            <select id="RightSelectCounty" style="float: right;display: inline-block;">
+                <option value="" disabled selected>Select A County</option>
+            </select>
         </div>
-        <div style="float: left;width: 50%; height:150%;">
-            <div style="float: left;width: 50%; height: 33%">
-                <ul class="legend">
-                    <li class="legend-btn" category="Median AQI"><span class="legend-symbol"></span>Median AQI</li>
-                    <li class="legend-btn" category="90th Percentile AQI"><span class="legend-symbol"></span>90th Percentile AQI</li>
-                    <li class="legend-btn" category="Max AQI"><span class="legend-symbol"></span>Max AQI</li>
-                </ul>
-                <svg id="LeftLineChart1"></svg>
-            </div>
-            <div style="float: left;width: 50%; height: 33%">
-                <ul class="legend">
-                    <li class="legend-btn" category="CO"><span class="legend-symbol"></span>CO</li>
-                    <li class="legend-btn" category="NO2"><span class="legend-symbol"></span>NO2</li>
-                    <li class="legend-btn" category="Ozone"><span class="legend-symbol"></span>Ozone</li>
-                    <li class="legend-btn" category="SO2"><span class="legend-symbol"></span>SO2</li>
-                    <li class="legend-btn" category="PM 2.5"><span class="legend-symbol"></span>PM 2.5</li>
-                    <li class="legend-btn" category="PM 10"><span class="legend-symbol"></span>PM 10</li>
-                </ul>
-                <svg id="LeftLineChart2"></svg>
-            </div>
-            <div style="float: left; width: 100%; height: 33%">
-                <div style="float: left;width: 25%; height:100%;"></div>
-                <div style="float: left;width: 50%; height: 100%">
-                    <svg id="LeftLineChart3"></svg>
-                </div>
-                <div style="float: left;width: 25%; height:100%;"></div>
-            </div>
-            <div style="float: left;width: 100%; height: 33%">
-                <div style="float: left;width: 50%; height: 100%">
+    </div>
+    <div style="height: 50px"></div>
+    <div style="position: absolute;left: 0; height: 1080px; display: block; width: 1903px;">
+        <h1 style="text-align: center; width: 100%;">Project 1: Bad Air</h1>
+        <h2>Raymond Gee</h2>
+        <div class="source">
+            Source: Data from <a href="https://www.epa.gov/outdoor-air-quality-data/">US Environmental Protection Agency. Air Quality System Data Mart available via https://www.epa.gov/outdoor-air-quality-data. Accessed Month 02, 2022</a>
+        </div> 
+
+        <div style="margin: auto; text-align: center;">
+            <label>Select Content</label><br/>
+            <select id="MapSelect" style="display: inline-block;margin: auto;">
+                <option value="Max AQI"selected>Max AQI</option>
+            </select>
+        </div> 
+    
+        <div id="viewCounties" style="height: 100%; width: 100%">
+            <div class="left" style="width: 475px;height: 50%; float:left; border: 1px solid black; border-width: 1px 0px 0px 0px;">
+                <div style="float: left;width: 100%; height: 50%">
                     <svg id="LeftPieChart1"></svg>
                 </div>
-                <div style="float: left;width: 50%; height: 100%">
+                <div style="float: left;width: 100%; height: 50%">
                     <svg id="LeftPieChart2"></svg>
                 </div>
             </div>
-        </div>
-        <div style="float: left;width: 50%; height:150%;">
-            <div style="float: left;width: 50%; height: 33%">
-                <ul class="legend">
-                    <li class="legend-btn" category="Median AQI"><span class="legend-symbol"></span>Median AQI</li>
-                    <li class="legend-btn" category="90th Percentile AQI"><span class="legend-symbol"></span>90th Percentile AQI</li>
-                    <li class="legend-btn" category="Max AQI"><span class="legend-symbol"></span>Max AQI</li>
-                </ul>
-                <svg id="RightLineChart1"></svg>
+            <div class="middle" style="width: 951px;height: 50%; float:left; margin: auto; text-align: center; border: 1px solid black; border-width: 1px 0px 0px 0px;">
+                <div id="map" style="display: block;"></div>
             </div>
-            <div style="float: left;width: 50%; height: 33%">
-                <ul class="legend">
-                    <li class="legend-btn" category="CO"><span class="legend-symbol"></span>CO</li>
-                    <li class="legend-btn" category="NO2"><span class="legend-symbol"></span>NO2</li>
-                    <li class="legend-btn" category="Ozone"><span class="legend-symbol"></span>Ozone</li>
-                    <li class="legend-btn" category="SO2"><span class="legend-symbol"></span>SO2</li>
-                    <li class="legend-btn" category="PM 2.5"><span class="legend-symbol"></span>PM 2.5</li>
-                    <li class="legend-btn" category="PM 10"><span class="legend-symbol"></span>PM 10</li>
-                </ul>
-                <svg id="RightLineChart2"></svg>
-            </div>
-            <div style="float: left; width: 100%; height: 33%">
-                <div style="float: left;width: 25%; height:100%;"></div>
-                <div style="float: left;width: 50%; height: 100%">
-                    <svg id="RightLineChart3"></svg>
-                </div>
-                <div style="float: left;width: 25%; height:100%;"></div>
-            </div>
-            <div style="float: left;width: 100%; height: 33%">
-                <div style="float: left;width: 50%; height: 100%">
+            <div class="right" style="width: 475px;height: 50%; float:left; border: 1px solid black; border-width: 1px 0px 0px 0px;">
+                <div style="float: left;width: 100%; height: 50%">
                     <svg id="RightPieChart1"></svg>
                 </div>
-                <div style="float: left;width: 50%; height: 100%">
+                <div style="float: left;width: 100%; height: 50%">
                     <svg id="RightPieChart2"></svg>
                 </div>
             </div>
+            <div class="left" style="width: 951px;height: 100%; float:left; border: 1px solid black; border-width: 0px 1px 0px 0px;">
+                <div style="float: left;width: 100%; height: 33%">
+                    <ul class="legend">
+                        <li class="legend-btn" category="Median AQI"><span class="legend-symbol"></span>Median AQI</li>
+                        <li class="legend-btn" category="90th Percentile AQI"><span class="legend-symbol"></span>90th Percentile AQI</li>
+                        <li class="legend-btn" category="Max AQI"><span class="legend-symbol"></span>Max AQI</li>
+                    </ul>
+                    <svg id="LeftLineChart1"></svg>
+                </div>
+                <div style="float: left;width: 100%; height: 33%">
+                    <ul class="legend">
+                        <li class="legend-btn" category="CO"><span class="legend-symbol"></span>CO</li>
+                        <li class="legend-btn" category="NO2"><span class="legend-symbol"></span>NO2</li>
+                        <li class="legend-btn" category="Ozone"><span class="legend-symbol"></span>Ozone</li>
+                        <li class="legend-btn" category="SO2"><span class="legend-symbol"></span>SO2</li>
+                        <li class="legend-btn" category="PM 2.5"><span class="legend-symbol"></span>PM 2.5</li>
+                        <li class="legend-btn" category="PM 10"><span class="legend-symbol"></span>PM 10</li>
+                    </ul>
+                    <svg id="LeftLineChart2"></svg>
+                </div>
+                <div style="float: left; width: 100%; height: 33%">
+                    <svg id="LeftLineChart3"></svg>
+                </div>
+            </div>
+            <div class="right" style="width: 951px;height: 100%; float:left;">
+                <div style="float: left;width: 100%; height: 33%">
+                    <ul class="legend">
+                        <li class="legend-btn" category="Median AQI"><span class="legend-symbol"></span>Median AQI</li>
+                        <li class="legend-btn" category="90th Percentile AQI"><span class="legend-symbol"></span>90th Percentile AQI</li>
+                        <li class="legend-btn" category="Max AQI"><span class="legend-symbol"></span>Max AQI</li>
+                    </ul>
+                    <svg id="RightLineChart1"></svg>
+                </div>
+                <div style="float: left;width: 100%; height: 33%">
+                    <ul class="legend">
+                        <li class="legend-btn" category="CO"><span class="legend-symbol"></span>CO</li>
+                        <li class="legend-btn" category="NO2"><span class="legend-symbol"></span>NO2</li>
+                        <li class="legend-btn" category="Ozone"><span class="legend-symbol"></span>Ozone</li>
+                        <li class="legend-btn" category="SO2"><span class="legend-symbol"></span>SO2</li>
+                        <li class="legend-btn" category="PM 2.5"><span class="legend-symbol"></span>PM 2.5</li>
+                        <li class="legend-btn" category="PM 10"><span class="legend-symbol"></span>PM 10</li>
+                    </ul>
+                    <svg id="RightLineChart2"></svg>
+                </div>
+                <div style="float: left; width: 100%; height: 33%">
+                    <svg id="RightLineChart3"></svg>
+                </div>
+            </div>
         </div>
-        <div style="float:left; width: 100%; height: 4%">
-            <label style="text-align: center;display: block;margin: auto;" id="SliderLabel">Current Selected Year: 2021</label>
-            <input style="display: block;margin: auto;" type="range" min="1980" max="2021" value="2021" class="slider" id="YearSlider">
-        </div>
-        <div id="viewMap" style="float:left; width: 100%; height: 50%;margin: auto; text-align: center;">
-            <div style="margin: auto;">
-                    <label>Select Content</label><br/>
-                    <button id="RUNITDOWN">RUN IT DOWN</button>
-                    <select id="MapSelect" style="display: inline-block;margin: auto;">
-                        <option value="Max AQI"selected>Max AQI</option>
-                    </select>
-                </div> 
-            <div class="map" style="display: block;"></div>
-        </div>
-    </div>
-
-    
-    
+    </div>    
     <div id="ToolTip" style="background: #808080; border-radius: 10px;"></div>
     <!-- Load external JS files -->
     <script src="d3.v6.min.js"></script>
-
-
+    
     <svg height="5" width="5" xmlns="http://www.w3.org/2000/svg" version="1.1"> <defs> <pattern id="lightstripe" patternUnits="userSpaceOnUse" width="5" height="5"> <image xlink:href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc1JyBoZWlnaHQ9JzUnPgogIDxyZWN0IHdpZHRoPSc1JyBoZWlnaHQ9JzUnIGZpbGw9J3doaXRlJy8+CiAgPHBhdGggZD0nTTAgNUw1IDBaTTYgNEw0IDZaTS0xIDFMMSAtMVonIHN0cm9rZT0nIzg4OCcgc3Ryb2tlLXdpZHRoPScxJy8+Cjwvc3ZnPg==" x="0" y="0" width="5" height="5"> </image> </pattern> </defs></svg>
     <script src="js/topojson.v3.js"></script>
     <script src="js/main.js"></script>

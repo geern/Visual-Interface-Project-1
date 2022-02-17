@@ -62,6 +62,7 @@ document.getElementById("LeftSelectFilter").onchange = function(){
 document.getElementById("LeftSelectCounty").onchange = function(){
 	buildCounties("Left", leftBuilt)
 	updateMap()
+	rotate = true
 	leftBuilt = true
 }
 document.getElementById("RightSelectFilter").onchange = function(){
@@ -70,6 +71,7 @@ document.getElementById("RightSelectFilter").onchange = function(){
 document.getElementById("RightSelectCounty").onchange = function(){
 	buildCounties("Right", rightBuilt)
 	updateMap()
+	rotate = false
 	rightBuilt = true
 }
 document.getElementById("MapSelect").onchange = function(){
@@ -77,9 +79,7 @@ document.getElementById("MapSelect").onchange = function(){
 }
 document.getElementById("RUNITDOWN").onclick = async function(){
 	await new Promise(r => setTimeout(r, 2000));
-	console.log("RUN")
 	for(var i = 1980; i <= 2021; i++){
-		console.log("WERUNNING")
 		await new Promise(r => setTimeout(r, 2000));
 		var e = document.getElementById("YearSlider")
 		e.value = i;
@@ -109,9 +109,9 @@ document.getElementById("YearSlider").oninput = function(){
 	}
 
 	//grabs the selected county on the right hand side
-	var select = document.getElementById("RightSelectCounty");
-	var value = select.options[select.selectedIndex].value
-	var arr = value.split(", ")
+	select = document.getElementById("RightSelectCounty");
+	value = select.options[select.selectedIndex].value
+	arr = value.split(", ")
 
 	if(select.selectedIndex) {
 		RightLineChart1.renderYearHighlight(e.value)
@@ -390,9 +390,13 @@ function updateMap(){
 		});
 		
 	}
+	var width = document.getElementById("map").parentElement.offsetWidth
+	var height = document.getElementById("map").parentElement.offsetHeight
 	if(typeof choroplethMap === "undefined"){
 		choroplethMap = new ChoroplethMap({ 
-			parentElement: '.map',   
+			parentElement: '#map',
+			'containerHeight': height,
+  			'containerWidth': width   
 			}, geoData, select.value);
 	} else {
 		choroplethMap.updateVis(geoData, select.value)
