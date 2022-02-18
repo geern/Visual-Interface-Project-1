@@ -189,18 +189,17 @@ class PieChart {
             stringReturn += `<div class="tooltip-title" ">${vis.title}</div>`
             stringReturn += `<ul>`
             vis.names.forEach(function (item, index){
-                stringReturn += `<li>Percent of ${item}: ${vis.numbers[index]}</li>`
+                stringReturn += `<li>Percent ${item}: ${vis.numbers[index].toFixed(2)}%</li>`
             })
             stringReturn += `</ul>`
             return stringReturn
           }
-          
+            var width = document.getElementById('ToolTip').offsetWidth
             d3.select('#ToolTip')
                 .style('display', 'block')
                 .style('position','absolute')
                 .style('left', ()=>{
-                    if(event.pageX >= 1600){
-                        var width = document.getElementById('ToolTip').offsetWidth
+                    if(event.pageX + width >= 1900){
                         return (event.pageX - 10 - width) + 'px'
                     }
                     return (event.pageX + 10) + 'px'

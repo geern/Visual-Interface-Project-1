@@ -231,15 +231,14 @@ class LineChart {
                 stringReturn += `</ul>`
                 return stringReturn
             }
-
+            var width = document.getElementById('ToolTip').offsetWidth
             d3.select('#ToolTip')
                 .style('display', 'block')
                 .style('position','absolute')
                 .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                 .style('left', ()=>{
-                    if(event.pageX >= 1600){
-                        var width = document.getElementById('ToolTip').offsetWidth
-                        return (event.pageX - vis.config.tooltipPadding - width) + 'px'
+                    if(event.pageX + width >= 1900){                        
+                        return (event.pageX - width) + 'px'
                     }
                     return (event.pageX + vis.config.tooltipPadding) + 'px'
                 })
