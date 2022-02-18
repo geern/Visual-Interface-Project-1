@@ -78,9 +78,8 @@ document.getElementById("MapSelect").onchange = function(){
 	updateMap()
 }
 document.getElementById("RUNITDOWN").onclick = async function(){
-	await new Promise(r => setTimeout(r, 2000));
 	for(var i = 1980; i <= 2021; i++){
-		await new Promise(r => setTimeout(r, 2000));
+		await new Promise(r => setTimeout(r, 1000));
 		var e = document.getElementById("YearSlider")
 		e.value = i;
 		e.oninput();
@@ -294,7 +293,7 @@ function updateDisplay (_state, _county, _lineChart1, _lineChart2, _lineChart3, 
 	})
 	recentPollutantYearData = recentPollutantYearData[0]
 	var daysData = getReverseNumberofDays(newData, leapYears)
-
+	
 	//updates charts
 	this[_lineChart1].updateVis(newData, "AQI For " + _county + " County", _side)
 	this[_lineChart2].updateVis(newData, "Percentage of Contributing Pollutant Per Year", _side)

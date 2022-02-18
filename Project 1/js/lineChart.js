@@ -22,9 +22,14 @@ class LineChart {
   initVis() {
       
 
-    let vis = this; //this is a keyword that can go out of scope, especially in callback functions, 
-                    //so it is good to create a variable that is a reference to 'this' class instance
-    //console.log(Object.keys(vis.data[0]))
+    let vis = this;
+
+    vis.colorPalette = d3.scaleOrdinal()
+            .domain(Object.keys(vis.data[0]))
+            .range(d3.schemeTableau10);
+
+    vis.data = vis.checkData(JSON.parse(JSON.stringify(vis.data)))
+
     vis.chart = []
     vis.names.forEach(function (item, index){
         //set up the width and height of the area where visualizations will go- factoring in margins               
@@ -53,9 +58,7 @@ class LineChart {
             .range([vis.height, 0])
             .nice(); //this just makes the y axes behave nicely by rounding up
 
-        vis.colorPalette = d3.scaleOrdinal()
-            .domain(Object.keys(vis.data[0]))
-            .range(d3.schemeTableau10);
+        
 
         // Define size of SVG drawing area
         vis.svg = d3.select(vis.config.parentElement)
@@ -63,7 +66,7 @@ class LineChart {
             .attr('height', vis.config.containerHeight + 100);
 
         // Append group element that will contain our actual chart (see margin convention)
-        vis.chart[index] = vis.svg.append('g')
+        vis.chart = vis.svg.append('g')
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`)
 
         // Initialize axes
@@ -71,50 +74,51 @@ class LineChart {
         vis.yAxis = d3.axisLeft(vis.yScale);
 
         vis.line = d3.line()
+            //.curve(d3.curveStep)
             .x(d => vis.xScale(vis.xValue(d)) + 50)
-            .y(d => vis.yScale(vis.yValue(d)) + 50);
+            .y(d => vis.yScale(vis.yValue(d)) + 50)
 
         if(index == 0){
-            vis.back = vis.chart[index].append('rect')
+            vis.back = vis.chart.append('rect')
                 .attr('width', vis.config.containerWidth - 95)
                 .attr('height', vis.config.containerHeight - 40)
                 .attr('fill', 'white')
                 .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top + 40})`);
             // Append x-axis group and move it to the bottom of the chart
-            vis.xAxisG = vis.chart[index].append('g')
+            vis.xAxisG = vis.chart.append('g')
                 .attr('class', 'axis x-axis')
                 .attr('transform', `translate(50,${vis.height + 50})`)
                 .call(vis.xAxis);
             
             // Append y-axis group
-            vis.yAxisG = vis.chart[index].append('g')
-                .attr('class', 'axis y-axis')
+            vis.yAxisG = vis.chart.append('g')
+                .attr('class', 'axis y-axis ' + vis.side + item.replace(/\s/g, '').replace(/\./g,'')  + "axis")
                 .attr('transform', `translate(50,50)`)
                 .call(vis.yAxis);
 
-            vis.chart[index].append("text")
+            vis.chart.append("text")
                 .attr("class", "y label")
                 .attr("text-anchor", "end")
                 .attr("x", 0)
                 .attr("y", vis.height/2 + 50)
                 .text(vis.yLabel);
 
-            vis.chart[index].append("text")
+            vis.chart.append("text")
                 .attr("class", "x label")
                 .attr("text-anchor", "end")
                 .attr("x", vis.width/2 + 50)
                 .attr("y", vis.height + 90)
                 .text(vis.xLabel);
 
-            vis.chart[index].append("text")
-                .attr("class", "title")
+            vis.chart.append("text")
+                .attr("class", "title" + vis.side + item.replace(/\s/g, '').replace(/\./g,''))
                 .attr("text-anchor", "end")
                 .attr("x", vis.width/2 + 100)
                 .attr("y", 10)
                 .text(vis.title);
         }
 
-        vis.chart[index].append('path')
+        vis.chart.append('path')
             .data([vis.data])
             .attr('stroke', (d) => vis.colorPalette(item))
             .attr('fill', 'none')
@@ -125,7 +129,7 @@ class LineChart {
         vis.bisectDate = d3.bisector(vis.xValue).left;
 
         if(index == vis.names.length-1){
-            vis.shadowHighlightYear = vis.chart[index].append('rect')
+            vis.shadowHighlightYear = vis.chart.append('rect')
                 .attr('width', 2)
                 .attr('height', vis.config.containerHeight - 40)
                 .attr('fill', 'grey')
@@ -133,7 +137,7 @@ class LineChart {
                 .attr('display', 'block')
                 .attr('opacity', 0.5)
 
-            vis.shadowHighlight = vis.chart[index].append('rect')
+            vis.shadowHighlight = vis.chart.append('rect')
                 .attr('width', 2)
                 .attr('height', vis.config.containerHeight - 40)
                 .attr('fill', 'grey')
@@ -141,7 +145,7 @@ class LineChart {
                 .attr('display', 'none')
                 .attr('opacity', 0.5)
 
-            vis.trackingArea = vis.chart[index].append('rect')
+            vis.trackingArea = vis.chart.append('rect')
                 .attr('width', vis.config.containerWidth - 95)
                 .attr('height', vis.config.containerHeight - 40)
                 .attr('fill', 'none')
@@ -154,6 +158,8 @@ class LineChart {
 
     updateVis(_data, _title, _side) { 
         let vis = this
+        _data = vis.checkData(JSON.parse(JSON.stringify(_data)))
+
         vis.names.forEach(function (item, index){
             if(index == 0) {
                 var extents = vis.names.map(function(dimensionName) {
@@ -164,29 +170,27 @@ class LineChart {
                     d3.max(extents, function(d) { return d[1] })];
 
                 vis.yScale.domain(extent)
-
-                vis.chart[index].select('.y-axis')
+                
+                d3.select("." + _side + item.replace(/\s/g, '').replace(/\./g,'') + "axis")
                     .transition()
                     .duration(1000)
                     .call(vis.yAxis)
 
-                vis.chart[index].select('.title')
+                d3.select('.title' + _side + item.replace(/\s/g, '').replace(/\./g,''))
                     .text(_title);
             }
 
             vis.yValue = d => parseInt(d[item]);
-            var u = vis.chart[index].select("." + _side + item.replace(/\s/g, '').replace(/\./g,''))
+
+            var u = d3.select("." + _side + item.replace(/\s/g, '').replace(/\./g,''))
                 .data([_data])
-            
+
             u.enter()
                 .append('path')
                 .merge(u)
                 .transition()
                 .duration(1000)
                 .attr('d', vis.line)
-                .attr("stroke", vis.colorPalette(item))
-                .attr("stroke-width", 4)
-                .attr('class', vis.side + item.replace(/\s/g, ''))
 
             u.exit().remove()
         })
@@ -206,7 +210,6 @@ class LineChart {
                 d3.selectAll('#ShadowHighlight').style('display','none')
             })
         .on('mousemove', function(event) {
-            console.log("MOVING")
             // Get date that corresponds to current mouse x-coordinate
             const xPos = d3.pointer(event, this)[0]; // First array element is x, second is y
             const date = vis.xScale.invert(xPos);
@@ -232,7 +235,6 @@ class LineChart {
             d3.select('#ToolTip')
                 .style('display', 'block')
                 .style('position','absolute')
-                //.style('left', (event.pageX + vis.config.tooltipPadding) + 'px')   
                 .style('top', (event.pageY + vis.config.tooltipPadding) + 'px')
                 .style('left', ()=>{
                     if(event.pageX >= 1600){
@@ -255,5 +257,28 @@ class LineChart {
         let vis = this
         vis.svg.select('#ShadowHighlightYear')
                 .attr('transform', `translate(${vis.xScale(_year) + 50},${vis.config.margin.top + 40})`)
+    }
+
+    checkData(_data){
+        let vis = this
+
+        for(var i = 1980; i <= 2021; i++){
+            if(_data.find(d => d.Year == i)) continue
+            else {
+                _data.push({
+                    Year: i,
+                })
+                vis.names.forEach(function(item, index){
+                    if(item == "Days without AQI") {
+                        if(new Date(i, 1, 29).getDate() === 29) _data.find(d => d.Year == i)[item] = 366
+                        else _data.find(d => d.Year == i)[item] = 365
+                    }
+                    else _data.find(d => d.Year == i)[item] = 0
+                })
+            }
+        }
+
+        _data.sort((a,b) => ((a.Year > b.Year) ? 1 : ((b.Year > a.Year) ? -1 : 0)))
+        return _data
     }
 }

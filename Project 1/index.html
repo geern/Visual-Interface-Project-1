@@ -7,7 +7,7 @@
 </head>
 <body style="background: #50b8de">
 
-    <div class="" style="width: 1900;height: 60px; position: fixed; top:0; left:0;right:0; background: #50b8de; z-index: 100;">
+    <div class="" style="width: 1900;height: 60px; position: fixed; top:0; left:0;right:0; background: #50b8de; z-index: 100; border: 1px solid black; border-width: 0px 0px 1px 0px">
         <div style="float: left;width:45%;height:100%;">
             <label>Select State for Filter</label><br/>
             <select id="LeftSelectFilter" style="display: inline-block;margin: auto;">
@@ -45,6 +45,7 @@
             <select id="MapSelect" style="display: inline-block;margin: auto;">
                 <option value="Max AQI"selected>Max AQI</option>
             </select>
+            <label id="mapInfo" style="display: block;">Click on map select county for left side</label>
         </div> 
     
         <div id="viewCounties" style="height: 100%; width: 100%">
