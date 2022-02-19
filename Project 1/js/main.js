@@ -109,8 +109,14 @@ document.getElementById("RUNITDOWN").onclick = async function(){
 	}
 }
 
-//on slider change, updates all charts
 document.getElementById("YearSlider").oninput = function(){
+	var e = document.getElementById("YearSlider")
+	var label = document.getElementById("SliderLabel")
+	label.innerHTML = "Current Selected Year: " + e.value
+}
+
+//on slider change, updates all charts
+document.getElementById("YearSlider").onchange = function(){
 	updateMap()
 	//gets year from slider and changes label to match the change
 	var e = document.getElementById("YearSlider")
