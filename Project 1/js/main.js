@@ -74,6 +74,29 @@ document.getElementById("RightSelectCounty").onchange = function(){
 	rotate = false
 	rightBuilt = true
 }
+document.getElementById("btnCollapse").onclick = function(){
+	var e = document.getElementById("header")
+	e.style.height = "0px"
+	e.style.transition = "all linear 0.5s";
+	e.style.overflow = "hidden"
+	e = document.getElementById("headerPadding")
+	e.style.height = "0px"
+	e.style.transition = "all linear 0.5s";
+	e = document.getElementById("btnExpand")
+	e.style.marginTop = "0px"
+	e.style.transition = "all linear 0.5s";
+}
+document.getElementById("btnExpand").onclick = function(){
+	var e = document.getElementById("header")
+	e.style.height = "79px"
+	e.style.transition = "all linear 0.5s";
+	e = document.getElementById("headerPadding")
+	e.style.height = "76px"
+	e.style.transition = "all linear 0.5s";
+	e = document.getElementById("btnExpand")
+	e.style.marginTop = "79px"
+	e.style.transition = "all linear 0.5s";
+}
 document.getElementById("MapSelect").onchange = function(){
 	updateMap()
 }

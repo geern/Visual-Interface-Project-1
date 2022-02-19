@@ -134,3 +134,39 @@
 .middle{
 	background: #CAFAFE
 }
+
+.headerStart{
+	height: 78px;
+}
+
+.Collapse {
+	height: 0px;
+	transition: all linear 0.5s;
+	overflow: hidden;
+}
+
+.Expand {
+	height: 70px;
+	transition: all linear 0.5s;
+}
+
+.btn {
+	display: block;
+  background-color: DodgerBlue; /* Blue background */
+  border: none; /* Remove borders */
+  color: white; /* White text */
+  /*padding: 12px 16px; /* Some padding */
+  /*font-size: 16px; /* Set a font size */
+  cursor: pointer; /* Mouse pointer on hover */
+  display: block;
+  margin: auto;
+  width: 100px;
+  z-index: 101;
+  opacity: 0.5;
+}
+
+/* Darker background on mouse-over */
+.btn:hover {
+  background-color: RoyalBlue;
+  opacity: 1;
+}
