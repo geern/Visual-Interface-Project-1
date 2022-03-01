@@ -64,6 +64,7 @@ document.getElementById("LeftSelectCounty").onchange = function(){
 	updateMap()
 	rotate = true
 	leftBuilt = true
+	document.getElementById("mapInfo").innerHTML = "Click on map select county for right side"
 }
 document.getElementById("RightSelectFilter").onchange = function(){
 	filter("Right")
@@ -73,6 +74,7 @@ document.getElementById("RightSelectCounty").onchange = function(){
 	updateMap()
 	rotate = false
 	rightBuilt = true
+	document.getElementById("mapInfo").innerHTML = "Click on map select county for left side"
 }
 document.getElementById("btnCollapse").onclick = function(){
 	var e = document.getElementById("header")
@@ -105,7 +107,7 @@ document.getElementById("RUNITDOWN").onclick = async function(){
 		await new Promise(r => setTimeout(r, 1000));
 		var e = document.getElementById("YearSlider")
 		e.value = i;
-		e.oninput();
+		e.onchange();
 	}
 }
 
